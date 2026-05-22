@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bumsoo Kim</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ink: #111;
+  --muted: #555;
+  --faint: #999;
+  --border: #DDD;
+  --bg: #F8F8F7;
+  --white: #FFF;
+  --blue: #1A4A8A;
+  --blue-lt: #E8EFF8;
+  --green-lt: #E8F5EE;
+  --green: #2A7A4A;
+  --purple-lt: #F0EAF8;
+  --purple: #6A3AAA;
+  --W: 960px;
+  --H: 540px;
+}
+
+body {
+  background: #222;
+  font-family: 'Inter', sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 16px 44px;
+  gap: 14px;
+  min-height: 100vh;
+}
+
+/* ── DECK ── */
+.deck { position: relative; width: var(--W); max-width: 100%; }
+
+.slide {
+  display: none;
+  width: var(--W); max-width: 100%;
+  height: var(--H);
+  background: var(--white);
+  border-radius: 3px;
+  box-shadow: 0 6px 28px rgba(0,0,0,.55);
+  overflow: hidden;
+  position: relative;
+}
+.slide.active { display: flex; animation: pop .22s ease; }
+@keyframes pop { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:none; } }
+
+/* ── LEFT PANEL (sidebar) ── */
+.lp {
+  width: 172px;
+  flex-shrink: 0;
+  background: var(--bg);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 20px 16px;
+  gap: 0;
+}
+.lp-name { font-size: 15px; font-weight: 700; color: var(--blue); line-height: 1.2; margin-bottom: 2px; }
+.lp-role { font-size: 10px; color: var(--muted); line-height: 1.4; margin-bottom: 14px; }
+.lp-section {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin-bottom: 6px;
+  margin-top: 14px;
+}
+.lp-section:first-of-type { margin-top: 0; }
+.lp-row { font-size: 11px; color: var(--muted); line-height: 1.5; margin-bottom: 2px; }
+.lp-row b { color: var(--ink); font-weight: 600; }
+.lp-pub { font-size: 10.5px; color: var(--muted); line-height: 1.6; }
+.lp-pub span { color: var(--ink); font-weight: 500; }
+.lp-fields { font-size: 10.5px; color: var(--muted); line-height: 1.6; }
+.lp-url { margin-top: auto; font-size: 9px; color: var(--blue); font-family: 'DM Mono', monospace; }
+
+/* ── MAIN CONTENT ── */
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* slide top bar */
+.sbar {
+  background: var(--blue);
+  padding: 8px 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+.sbar h2 { font-size: 12px; font-weight: 600; color: #fff; letter-spacing: .04em; }
+.sbar .sep { color: rgba(255,255,255,.3); font-size: 11px; }
+.sbar .desc { font-size: 11px; color: rgba(255,255,255,.55); font-style: italic; }
+.sbar .pg { margin-left: auto; font-family: 'DM Mono', monospace; font-size: 9px; color: rgba(255,255,255,.35); }
+
+.sbody { flex: 1; padding: 14px 18px 12px; overflow: hidden; display: flex; flex-direction: column; gap: 10px; }
+
+/* ── INDUSTRY STRIP ── */
+.industry-strip {
+  display: flex;
+  gap: 8px;
+}
+.ind-card {
+  flex: 1;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  padding: 10px 12px;
+  background: var(--white);
+}
+.ind-card .ind-org { font-size: 11px; font-weight: 700; color: var(--ink); margin-bottom: 2px; }
+.ind-card .ind-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 8.5px;
+  color: var(--blue);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.ind-card .ind-desc { font-size: 10.5px; color: var(--muted); line-height: 1.5; }
+
+/* ── PAPER GRID ── */
+.paper-area { flex: 1; display: flex; gap: 10px; overflow: hidden; }
+.paper-col { display: flex; flex-direction: column; gap: 8px; }
+.paper-col.col2 { flex: 1; }
+.paper-col.col3 { flex: 1.3; }
+.col-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 8.5px;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--faint);
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.pcard {
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  display: flex;
+  gap: 10px;
+  padding: 8px 10px;
+  cursor: pointer;
+  transition: border-color .15s, box-shadow .15s;
+  background: var(--white);
+  flex-shrink: 0;
+}
+.pcard:hover { border-color: var(--blue); box-shadow: 0 2px 8px rgba(26,74,138,.12); }
+.pcard img {
+  width: 64px; height: 42px;
+  object-fit: cover;
+  border-radius: 2px;
+  flex-shrink: 0;
+  background: var(--bg);
+  border: 1px solid var(--border);
+}
+.pcard-info { flex: 1; min-width: 0; }
+.pcard-venue {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  color: var(--blue);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  margin-bottom: 2px;
+  display: flex; align-items: center; gap: 5px;
+}
+.badge {
+  font-family: 'DM Mono', monospace;
+  font-size: 7.5px;
+  padding: 1px 5px;
+  border-radius: 2px;
+  font-style: normal;
+}
+.bd-oral { background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; }
+.bd-if   { background: #D1FAE5; color: #065F46; border: 1px solid #6EE7B7; }
+.bd-rv   { background: #F3F4F6; color: #6B7280; border: 1px solid #D1D5DB; }
+.pcard-title { font-size: 11px; font-weight: 500; color: var(--ink); line-height: 1.35; }
+.pcard-hint {
+  font-size: 9px;
+  color: var(--blue);
+  margin-top: 3px;
+  opacity: 0;
+  transition: opacity .15s;
+}
+.pcard:hover .pcard-hint { opacity: 1; }
+
+/* ── DETAIL OVERLAY ── */
+.detail-overlay {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: var(--white);
+  z-index: 10;
+  flex-direction: column;
+  animation: pop .2s ease;
+}
+.detail-overlay.open { display: flex; }
+.detail-header {
+  background: var(--blue);
+  padding: 10px 18px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.detail-header h3 { font-size: 12px; font-weight: 600; color: #fff; flex: 1; line-height: 1.35; }
+.back-btn {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  color: rgba(255,255,255,.7);
+  background: rgba(255,255,255,.1);
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 2px;
+  padding: 4px 10px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background .15s;
+}
+.back-btn:hover { background: rgba(255,255,255,.2); }
+.detail-body {
+  flex: 1;
+  display: flex;
+  gap: 0;
+  overflow: hidden;
+}
+.detail-left {
+  width: 280px;
+  flex-shrink: 0;
+  padding: 16px 18px;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  background: var(--bg);
+}
+.detail-right {
+  flex: 1;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+}
+.d-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin-bottom: 4px;
+}
+.d-val { font-size: 12px; color: var(--ink); line-height: 1.6; }
+.d-val b { color: var(--blue); }
+.detail-img {
+  width: 100%;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+  object-fit: contain;
+  max-height: 160px;
+  background: var(--bg);
+}
+.contrib-list { list-style: none; display: flex; flex-direction: column; gap: 5px; }
+.contrib-list li {
+  font-size: 11.5px;
+  color: var(--muted);
+  line-height: 1.5;
+  padding-left: 10px;
+  border-left: 2px solid var(--blue);
+}
+.tag-row-d { display: flex; flex-wrap: wrap; gap: 5px; }
+.tag-d {
+  font-family: 'DM Mono', monospace;
+  font-size: 8.5px;
+  background: var(--blue-lt);
+  color: var(--blue);
+  border: 1px solid #C5D5E8;
+  border-radius: 2px;
+  padding: 2px 7px;
+}
+
+/* ── CONTROLS ── */
+.controls {
+  display: flex; align-items: center; gap: 10px;
+  width: var(--W); max-width: 100%;
+}
+.prog { flex: 1; height: 2px; background: rgba(255,255,255,.08); border-radius: 2px; overflow: hidden; }
+.prog-fill { height: 100%; background: #4A7EC0; border-radius: 2px; transition: width .25s; }
+.btn {
+  background: rgba(255,255,255,.07);
+  border: 1px solid rgba(255,255,255,.14);
+  color: #BBB;
+  padding: 5px 14px;
+  border-radius: 3px;
+  cursor: pointer;
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  transition: background .15s;
+}
+.btn:hover { background: rgba(255,255,255,.14); }
+.btn:disabled { opacity: .3; cursor: default; }
+.ctr { font-family: 'DM Mono', monospace; font-size: 10px; color: rgba(255,255,255,.35); }
+
+.thumbs { display: flex; gap: 6px; width: var(--W); max-width: 100%; overflow-x: auto; }
+.thumbs::-webkit-scrollbar { height: 3px; }
+.thumbs::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); }
+.th {
+  font-family: 'DM Mono', monospace;
+  font-size: 8px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,.3);
+  background: rgba(255,255,255,.04);
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 2px;
+  padding: 4px 10px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all .15s;
+}
+.th:hover { color: rgba(255,255,255,.6); }
+.th.active { color: #7BAED8; border-color: #3A6EA8; background: rgba(74,126,192,.12); }
+
+/* accent line */
+.aline { position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--blue), #5A8FC0); }
+</style>
+</head>
+<body>
+
+<div class="deck">
+
+<!-- ════════════════════════════════════
+     SLIDE 1 — OVERVIEW
+════════════════════════════════════ -->
+<div class="slide active" id="s1">
+  <div class="lp">
+    <div class="lp-name">Bumsoo Kim</div>
+    <div class="lp-role">GenAI + Graphics<br>Researcher</div>
+
+    <div class="lp-section">Education</div>
+    <div class="lp-row"><b>B.S.</b> Art &amp; Technology,<br>EE — CAU</div>
+    <div class="lp-row" style="margin-top:6px"><b>M.S.</b> Applied Art &amp;<br>Technology — CAU</div>
+
+    <div class="lp-section">1st-authored</div>
+    <div class="lp-pub">
+      <span>NeurIPS:W 23 🏆</span><br>
+      <span>CVPR:W 24</span><br>
+      <span>AAAI:W 25 🏆</span><br>
+      <span>WACV 25</span><br>
+      <span>ICASSP 26</span><br>
+      4+ SCIE journals
+    </div>
+
+    <div class="lp-section">Research Fields</div>
+    <div class="lp-fields">Computer vision,<br>computer graphics</div>
+    <div class="lp-fields" style="margin-top:4px">Image / video / 3D<br>editing, generation</div>
+
+    <div class="lp-url">bumsookim00.com</div>
+  </div>
+
+  <div class="main">
+    <div class="sbar">
+      <h2>Industry</h2>
+      <span class="pg">01 / 04</span>
+    </div>
+    <div class="sbody">
+
+      <!-- Industry strip -->
+      <div class="industry-strip">
+        <div class="ind-card">
+          <div class="ind-org">ETRI</div>
+          <div class="ind-tag">SafeAI</div>
+          <div class="ind-desc">Object detection &amp; tracking</div>
+        </div>
+        <div class="ind-card">
+          <div class="ind-org">VIVE STUDIOS</div>
+          <div class="ind-tag">FilmAI</div>
+          <div class="ind-desc">Face swapping / re-aging</div>
+        </div>
+        <div class="ind-card">
+          <div class="ind-org">Boeing Research</div>
+          <div class="ind-tag">ManufacturingAI</div>
+          <div class="ind-desc">Anomaly detection</div>
+        </div>
+        <div class="ind-card">
+          <div class="ind-org">Smilegate AI</div>
+          <div class="ind-tag">Vision AI</div>
+          <div class="ind-desc">Game content generation</div>
+        </div>
+      </div>
+
+      <!-- 3-column paper grid -->
+      <div class="paper-area">
+        <!-- 2D -->
+        <div class="paper-col col2">
+          <div class="col-label">2D</div>
+          <div class="pcard" onclick="openDetail('toonaging')">
+            <img src="https://bumsookim00.com/asset/images/toonaging.gif" alt="">
+            <div class="pcard-info">
+              <div class="pcard-venue">CVPR:W 2024</div>
+              <div class="pcard-title">ToonAging</div>
+              <div class="pcard-hint">View details →</div>
+            </div>
+          </div>
+          <div class="pcard" onclick="openDetail('minecraftify')">
+            <img src="https://bumsookim00.com/asset/images/minecraftify.png" alt="">
+            <div class="pcard-info">
+              <div class="pcard-venue">NeurIPS:W 2023 <span class="badge bd-oral">Oral</span></div>
+              <div class="pcard-title">Minecraft-ify</div>
+              <div class="pcard-hint">View details →</div>
+            </div>
+          </div>
+          <div class="pcard" onclick="openDetail('style')">
+            <img src="https://bumsookim00.com/asset/images/styletransfer.png" alt="">
+            <div class="pcard-info">
+              <div class="pcard-venue">CMES 2024 <span class="badge bd-if">Q2</span></div>
+              <div class="pcard-title">Patchified AdaIN</div>
+              <div class="pcard-hint">View details →</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Video -->
+        <div class="paper-col col3">
+          <div class="col-label">Video</div>
+          <div class="pcard" onclick="openDetail('videott')">
+            <img src="https://bumsookim00.com/asset/images/videotimetravel.gif" alt="">
+            <div class="pcard-info">
+              <div class="pcard-venue">Visual Computer 2026 <span class="badge bd-if">IF 2.9</span></div>
+              <div class="pcard-title">VideoTimeTravel</div>
+              <div class="pcard-hint">View details →</div>
+            </div>
+          </div>
+          <div class="pcard" onclick="openDetail('makevlm')">
+            <img src="https://bumsookim00.com/asset/images/makevlm.png" alt="">
+            <div class="pcard-info">
+              <div class="pcard-venue">WACV 2025</div>
+              <div class="pcard-title">Make VLM Recognize Hallucination</div>
+              <div class="pcard-hint">View details →</div>
+            </div>
+          </div>
+          <div class="pcard" onclick="openDetail('vfra')">
+            <img src="https://bumsookim00.com/asset/images/vfra.gif" alt="">
+            <div class="pcard-info">
+              <div class="pcard-venue">arXiv 2023</div>
+              <div class="pcard-title">Video Face Re-Aging</div>
+              <div class="pcard-hint">View details →</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3D / Audio -->
+        <div class="paper-col col2">
+          <div class="col-label">3D · Audio</div>
+          <div class="pcard" onclick="openDetail('sounds')">
+            <img src="https://bumsookim00.com/asset/images/soundsthatshape.gif" alt="">
+            <div class="pcard-info">
+              <div class="pcard-venue">ICASSP 2026</div>
+              <div class="pcard-title">Sounds That Shape</div>
+              <div class="pcard-hint">View details →</div>
+            </div>
+          </div>
+          <div class="pcard" onclick="openDetail('taming')">
+            <img src="https://bumsookim00.com/asset/images/taminggaussian.png" alt="">
+            <div class="pcard-info">
+              <div class="pcard-venue">CGI 2026 <span class="badge bd-rv">Review</span></div>
+              <div class="pcard-title">Taming Gaussian</div>
+              <div class="pcard-hint">View details →</div>
+            </div>
+          </div>
+          <div class="pcard" onclick="openDetail('flood')">
+            <img src="https://bumsookim00.com/asset/images/multifloodsynth.gif" alt="">
+            <div class="pcard-info">
+              <div class="pcard-venue">AAAI:W 2025 <span class="badge bd-oral">Oral</span></div>
+              <div class="pcard-title">MultiFloodSynth</div>
+              <div class="pcard-hint">View details →</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- sbody -->
+    <div class="aline"></div>
+  </div><!-- main -->
+
+  <!-- ── DETAIL OVERLAYS ── -->
+
+  <div class="detail-overlay" id="d-toonaging">
+    <div class="detail-header">
+      <h3>ToonAging: Face Re-Aging upon Artistic Portrait Style Transfer</h3>
+      <button class="back-btn" onclick="closeDetail('toonaging')">← Back</button>
+    </div>
+    <div class="detail-body">
+      <div class="detail-left">
+        <div>
+          <div class="d-label">Venue</div>
+          <div class="d-val"><b>CVPR AI4CC Workshop 2024</b></div>
+        </div>
+        <div>
+          <div class="d-label">Authors</div>
+          <div class="d-val" style="font-size:11px"><b>B. Kim</b>, A. Muqeet, K. Lee, S. Seo</div>
+        </div>
+        <img class="detail-img" src="https://bumsookim00.com/asset/images/toonaging.gif" alt="">
+        <div>
+          <div class="d-label">Keywords</div>
+          <div class="tag-row-d">
+            <span class="tag-d">Face Re-aging</span>
+            <span class="tag-d">Style Transfer</span>
+            <span class="tag-d">Diffusion</span>
+            <span class="tag-d">Toon</span>
+          </div>
+        </div>
+      </div>
+      <div class="detail-right">
+        <div>
+          <div class="d-label">Problem</div>
+          <div class="d-val">Existing re-aging methods fail on artistic / cartoon-style portraits — they assume photorealistic inputs.</div>
+        </div>
+        <div>
+          <div class="d-label">Method</div>
+          <div class="d-val">Decouples style transfer and age editing: first transfer portrait style, then apply diffusion-based re-aging conditioned on the artistic domain.</div>
+        </div>
+        <div>
+          <div class="d-label">Key Contributions</div>
+          <ul class="contrib-list">
+            <li>Domain-aware face re-aging pipeline for artistic portraits</li>
+            <li>Disentanglement of style and age attributes in latent space</li>
+            <li>Works across toon, painting, and sketch styles</li>
+          </ul>
+        </div>
+        <div>
+          <div class="d-label">Application</div>
+          <div class="d-val">Film VFX, animation studios, entertainment content creation.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="detail-overlay" id="d-minecraftify">
+    <div class="detail-header">
+      <h3>Minecraft-ify: Minecraft Style Image Generation with Text-guided Image Editing</h3>
+      <button class="back-btn" onclick="closeDetail('minecraftify')">← Back</button>
+    </div>
+    <div class="detail-body">
+      <div class="detail-left">
+        <div>
+          <div class="d-label">Venue</div>
+          <div class="d-val"><b>NeurIPS ML4CD Workshop 2023</b> — Oral (Top 8.7%)</div>
+        </div>
+        <div>
+          <div class="d-label">Authors</div>
+          <div class="d-val" style="font-size:11px"><b>B. Kim</b>, S. Byun, Y. Jung, W. Shin, S. Amin, S. Seo</div>
+        </div>
+        <img class="detail-img" src="https://bumsookim00.com/asset/images/minecraftify.png" alt="">
+        <div>
+          <div class="d-label">Keywords</div>
+          <div class="tag-row-d">
+            <span class="tag-d">Text-guided</span>
+            <span class="tag-d">Style Transfer</span>
+            <span class="tag-d">Gaming</span>
+            <span class="tag-d">In-game AI</span>
+          </div>
+        </div>
+      </div>
+      <div class="detail-right">
+        <div>
+          <div class="d-label">Problem</div>
+          <div class="d-val">Generating in-game assets in a consistent voxel/Minecraft aesthetic from arbitrary text prompts or reference images.</div>
+        </div>
+        <div>
+          <div class="d-label">Method</div>
+          <div class="d-val">Text-guided image editing pipeline fine-tuned on Minecraft asset distribution. Leverages IP-Adapter and domain-specific LoRA for stylistic consistency.</div>
+        </div>
+        <div>
+          <div class="d-label">Key Contributions</div>
+          <ul class="contrib-list">
+            <li>First text-driven Minecraft-style generation system</li>
+            <li>Custom dataset of Minecraft asset–natural image pairs</li>
+            <li>Deployable in-game as real-time asset generator</li>
+          </ul>
+        </div>
+        <div>
+          <div class="d-label">Application</div>
+          <div class="d-val">Procedural game content creation, rapid asset prototyping for game developers.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="detail-overlay" id="d-style">
+    <div class="detail-header">
+      <h3>Explicitly Color-Inspired Neural Style Transfer Using Patchified AdaIN</h3>
+      <button class="back-btn" onclick="closeDetail('style')">← Back</button>
+    </div>
+    <div class="detail-body">
+      <div class="detail-left">
+        <div>
+          <div class="d-label">Venue</div>
+          <div class="d-val"><b>CMES 2024</b> — Q2 Journal</div>
+        </div>
+        <div>
+          <div class="d-label">Authors</div>
+          <div class="d-val" style="font-size:11px"><b>B. Kim</b>, W. Shin, Y. Jung, Y. Park, S. Seo</div>
+        </div>
+        <img class="detail-img" src="https://bumsookim00.com/asset/images/styletransfer.png" alt="">
+        <div>
+          <div class="d-label">Keywords</div>
+          <div class="tag-row-d">
+            <span class="tag-d">Neural Style Transfer</span>
+            <span class="tag-d">AdaIN</span>
+            <span class="tag-d">Color Control</span>
+          </div>
+        </div>
+      </div>
+      <div class="detail-right">
+        <div>
+          <div class="d-label">Problem</div>
+          <div class="d-val">Standard AdaIN-based style transfer lacks explicit color control, leading to undesired hue shifts.</div>
+        </div>
+        <div>
+          <div class="d-label">Method</div>
+          <div class="d-val">Patch-level AdaIN normalization with a color-histogram guidance loss. Separates color and texture channels for independent control.</div>
+        </div>
+        <div>
+          <div class="d-label">Key Contributions</div>
+          <ul class="contrib-list">
+            <li>Explicit color palette control in neural style transfer</li>
+            <li>Patchified AdaIN preserving local texture fidelity</li>
+            <li>User-specified color extraction from reference images</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="detail-overlay" id="d-videott">
+    <div class="detail-header">
+      <h3>VideoTimeTravel: High-Fidelity Face Re-Aging Diffusion Models for Production Video</h3>
+      <button class="back-btn" onclick="closeDetail('videott')">← Back</button>
+    </div>
+    <div class="detail-body">
+      <div class="detail-left">
+        <div>
+          <div class="d-label">Venue</div>
+          <div class="d-val"><b>The Visual Computer 2026</b> — IF 2.9</div>
+        </div>
+        <div>
+          <div class="d-label">Authors</div>
+          <div class="d-val" style="font-size:11px"><b>B. Kim</b>, Y. Nam, S. Seo</div>
+        </div>
+        <img class="detail-img" src="https://bumsookim00.com/asset/images/videotimetravel.gif" alt="">
+        <div>
+          <div class="d-label">Keywords</div>
+          <div class="tag-row-d">
+            <span class="tag-d">Face Re-aging</span>
+            <span class="tag-d">Video Diffusion</span>
+            <span class="tag-d">Temporal Consistency</span>
+          </div>
+        </div>
+      </div>
+      <div class="detail-right">
+        <div>
+          <div class="d-label">Problem</div>
+          <div class="d-val">Frame-by-frame re-aging breaks temporal consistency in video — flickering across frames is a core bottleneck for production use.</div>
+        </div>
+        <div>
+          <div class="d-label">Method</div>
+          <div class="d-val">Diffusion-based video re-aging with temporal attention and cross-frame guidance, maintaining identity and age consistency across long sequences.</div>
+        </div>
+        <div>
+          <div class="d-label">Key Contributions</div>
+          <ul class="contrib-list">
+            <li>Temporally-consistent face re-aging at production quality</li>
+            <li>Cross-frame identity preservation mechanism</li>
+            <li>Evaluated on film-grade footage benchmarks</li>
+          </ul>
+        </div>
+        <div>
+          <div class="d-label">Application</div>
+          <div class="d-val">Film post-production, digital de-aging for actors, streaming content.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="detail-overlay" id="d-makevlm">
+    <div class="detail-header">
+      <h3>Make VLM Recognize Visual Hallucination on Cartoon Character Image with Pose Information</h3>
+      <button class="back-btn" onclick="closeDetail('makevlm')">← Back</button>
+    </div>
+    <div class="detail-body">
+      <div class="detail-left">
+        <div>
+          <div class="d-label">Venue</div>
+          <div class="d-val"><b>WACV 2025</b></div>
+        </div>
+        <div>
+          <div class="d-label">Authors</div>
+          <div class="d-val" style="font-size:11px"><b>B. Kim</b>*, W. Shin*, K. Lee, Y. Jung, S. Seo</div>
+        </div>
+        <img class="detail-img" src="https://bumsookim00.com/asset/images/makevlm.png" alt="">
+        <div>
+          <div class="d-label">Keywords</div>
+          <div class="tag-row-d">
+            <span class="tag-d">VLM</span>
+            <span class="tag-d">Hallucination</span>
+            <span class="tag-d">Cartoon</span>
+            <span class="tag-d">Pose</span>
+          </div>
+        </div>
+      </div>
+      <div class="detail-right">
+        <div>
+          <div class="d-label">Problem</div>
+          <div class="d-val">VLMs frequently hallucinate character identities when posed cartoon images differ from their training distribution.</div>
+        </div>
+        <div>
+          <div class="d-label">Method</div>
+          <div class="d-val">Pose-conditioned visual prompting: inject skeleton pose information as an auxiliary visual signal to ground the VLM's character recognition.</div>
+        </div>
+        <div>
+          <div class="d-label">Key Contributions</div>
+          <ul class="contrib-list">
+            <li>PA-ICVL dataset: pose-augmented cartoon visual language benchmark</li>
+            <li>Pose injection reduces hallucination rate significantly</li>
+            <li>ChatGPT-compatible demo deployed publicly</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="detail-overlay" id="d-vfra">
+    <div class="detail-header">
+      <h3>Video Face Re-Aging: Toward Temporally Consistent Face Re-Aging</h3>
+      <button class="back-btn" onclick="closeDetail('vfra')">← Back</button>
+    </div>
+    <div class="detail-body">
+      <div class="detail-left">
+        <div>
+          <div class="d-label">Venue</div>
+          <div class="d-val"><b>arXiv 2023</b></div>
+        </div>
+        <div>
+          <div class="d-label">Authors</div>
+          <div class="d-val" style="font-size:11px">A. Muqeet*, K. Lee*, <b>B. Kim</b>, Y. Hong, H. Lee, W. Kim, K. Lee</div>
+        </div>
+        <img class="detail-img" src="https://bumsookim00.com/asset/images/vfra.gif" alt="">
+        <div>
+          <div class="d-label">Keywords</div>
+          <div class="tag-row-d">
+            <span class="tag-d">Video Re-aging</span>
+            <span class="tag-d">Temporal</span>
+            <span class="tag-d">Face</span>
+          </div>
+        </div>
+      </div>
+      <div class="detail-right">
+        <div>
+          <div class="d-label">Problem</div>
+          <div class="d-val">Per-frame re-aging ignores video coherence — faces flicker and identity drifts across clips.</div>
+        </div>
+        <div>
+          <div class="d-label">Method</div>
+          <div class="d-val">Optical-flow guided temporal consistency module combined with a GAN-based re-aging backbone. Maintains identity across frames without per-clip finetuning.</div>
+        </div>
+        <div>
+          <div class="d-label">Key Contributions</div>
+          <ul class="contrib-list">
+            <li>Temporal warp loss for frame-to-frame consistency</li>
+            <li>No per-video finetuning required</li>
+            <li>Real-time capable on consumer GPUs</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="detail-overlay" id="d-sounds">
+    <div class="detail-header">
+      <h3>Sounds That Shape: Audio-Driven 3D Mesh Generation with Attribute-Decoupled SDS</h3>
+      <button class="back-btn" onclick="closeDetail('sounds')">← Back</button>
+    </div>
+    <div class="detail-body">
+      <div class="detail-left">
+        <div>
+          <div class="d-label">Venue</div>
+          <div class="d-val"><b>ICASSP 2026</b></div>
+        </div>
+        <div>
+          <div class="d-label">Authors</div>
+          <div class="d-val" style="font-size:11px"><b>B. Kim</b>, S. Seo</div>
+        </div>
+        <img class="detail-img" src="https://bumsookim00.com/asset/images/soundsthatshape.gif" alt="">
+        <div>
+          <div class="d-label">Keywords</div>
+          <div class="tag-row-d">
+            <span class="tag-d">Audio-to-3D</span>
+            <span class="tag-d">SDS</span>
+            <span class="tag-d">Mesh Generation</span>
+            <span class="tag-d">Multimodal</span>
+          </div>
+        </div>
+      </div>
+      <div class="detail-right">
+        <div>
+          <div class="d-label">Problem</div>
+          <div class="d-val">Generating 3D geometry from audio cues is underexplored — most 3D generation relies on text or image prompts alone.</div>
+        </div>
+        <div>
+          <div class="d-label">Method</div>
+          <div class="d-val">Attribute-decoupled Score Distillation Sampling (SDS): separates material and geometry guidance signals, conditioning shape generation on audio embeddings from a pretrained audio encoder.</div>
+        </div>
+        <div>
+          <div class="d-label">Key Contributions</div>
+          <ul class="contrib-list">
+            <li>First audio-driven 3D mesh generation pipeline</li>
+            <li>Attribute-decoupled SDS: separates shape vs. material</li>
+            <li>Audio → geometry correspondence without paired data</li>
+          </ul>
+        </div>
+        <div>
+          <div class="d-label">Application</div>
+          <div class="d-val">Procedural audio-visual game assets, immersive XR environments, creative tools.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="detail-overlay" id="d-taming">
+    <div class="detail-header">
+      <h3>Taming Gaussian Densification in Score Distillation Sampling for High-Fidelity Text-to-3D</h3>
+      <button class="back-btn" onclick="closeDetail('taming')">← Back</button>
+    </div>
+    <div class="detail-body">
+      <div class="detail-left">
+        <div>
+          <div class="d-label">Venue</div>
+          <div class="d-val"><b>CGI 2026</b> — Under Review</div>
+        </div>
+        <div>
+          <div class="d-label">Authors</div>
+          <div class="d-val" style="font-size:11px"><b>B. Kim</b>, J. Ryu, S. Seo</div>
+        </div>
+        <img class="detail-img" src="https://bumsookim00.com/asset/images/taminggaussian.png" alt="">
+        <div>
+          <div class="d-label">Keywords</div>
+          <div class="tag-row-d">
+            <span class="tag-d">3DGS</span>
+            <span class="tag-d">SDS</span>
+            <span class="tag-d">Text-to-3D</span>
+            <span class="tag-d">Densification</span>
+          </div>
+        </div>
+      </div>
+      <div class="detail-right">
+        <div>
+          <div class="d-label">Problem</div>
+          <div class="d-val">3D Gaussian Splatting combined with SDS suffers from uncontrolled Gaussian densification — leading to floaters, artifacts, and geometry collapse.</div>
+        </div>
+        <div>
+          <div class="d-label">Method</div>
+          <div class="d-val">Adaptive densification controller that monitors SDS gradient statistics and prunes/splits Gaussians based on geometric confidence scores during optimization.</div>
+        </div>
+        <div>
+          <div class="d-label">Key Contributions</div>
+          <ul class="contrib-list">
+            <li>Principled densification schedule guided by SDS signal quality</li>
+            <li>Significant reduction in floaters and surface artifacts</li>
+            <li>Compatible with existing text-to-3D SDS pipelines</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="detail-overlay" id="d-flood">
+    <div class="detail-header">
+      <h3>MultiFloodSynth: Multi-Annotated Flood Synthetic Dataset Generation</h3>
+      <button class="back-btn" onclick="closeDetail('flood')">← Back</button>
+    </div>
+    <div class="detail-body">
+      <div class="detail-left">
+        <div>
+          <div class="d-label">Venue</div>
+          <div class="d-val"><b>AAAI GoodData Workshop 2025</b> — Oral</div>
+        </div>
+        <div>
+          <div class="d-label">Authors</div>
+          <div class="d-val" style="font-size:11px">Y. Kang*, Y. Jung*, W. Shin*, <b>B. Kim</b>*, S. Seo</div>
+        </div>
+        <img class="detail-img" src="https://bumsookim00.com/asset/images/multifloodsynth.gif" alt="">
+        <div>
+          <div class="d-label">Keywords</div>
+          <div class="tag-row-d">
+            <span class="tag-d">Synthetic Data</span>
+            <span class="tag-d">Flood</span>
+            <span class="tag-d">Segmentation</span>
+            <span class="tag-d">Detection</span>
+          </div>
+        </div>
+      </div>
+      <div class="detail-right">
+        <div>
+          <div class="d-label">Problem</div>
+          <div class="d-val">Real flood imagery is scarce and lacks multi-task annotations (segmentation + depth + detection). Data collection during disasters is dangerous and costly.</div>
+        </div>
+        <div>
+          <div class="d-label">Method</div>
+          <div class="d-val">Generative pipeline combining diffusion-based image synthesis with automated multi-label annotation: segmentation masks, depth maps, and bounding boxes generated jointly.</div>
+        </div>
+        <div>
+          <div class="d-label">Key Contributions</div>
+          <ul class="contrib-list">
+            <li>Large-scale synthetic flood dataset with 4 annotation types</li>
+            <li>Fully automated annotation pipeline — no manual labeling</li>
+            <li>Bridges sim-to-real gap for disaster response AI</li>
+          </ul>
+        </div>
+        <div>
+          <div class="d-label">Application</div>
+          <div class="d-val">Disaster response, flood monitoring, emergency AI systems.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /slide 1 -->
+
+</div><!-- /deck -->
+
+<!-- ── CONTROLS ── -->
+<div class="controls">
+  <button class="btn" id="prev" onclick="go(-1)" disabled>← Prev</button>
+  <div class="prog"><div class="prog-fill" id="prog" style="width:100%"></div></div>
+  <span class="ctr" id="ctr">1 / 1</span>
+  <button class="btn" id="next" onclick="go(1)" disabled>Next →</button>
+</div>
+<div class="thumbs">
+  <div class="th active" onclick="goTo(1)">Overview</div>
+</div>
+
+<script>
+let cur = 1, total = 1;
+
+function goTo(n) {
+  document.getElementById('s'+cur).classList.remove('active');
+  document.querySelectorAll('.th')[cur-1].classList.remove('active');
+  cur = Math.max(1, Math.min(total, n));
+  document.getElementById('s'+cur).classList.add('active');
+  document.querySelectorAll('.th')[cur-1].classList.add('active');
+  document.getElementById('ctr').textContent = cur + ' / ' + total;
+  document.getElementById('prev').disabled = cur === 1;
+  document.getElementById('next').disabled = cur === total;
+  document.getElementById('prog').style.width = (cur/total*100)+'%';
+}
+function go(d) { goTo(cur+d); }
+document.addEventListener('keydown', e => {
+  if (e.key==='ArrowRight'||e.key==='ArrowDown') go(1);
+  if (e.key==='ArrowLeft'||e.key==='ArrowUp')   go(-1);
+  if (e.key==='Escape') {
+    document.querySelectorAll('.detail-overlay.open').forEach(el => el.classList.remove('open'));
+  }
+});
+
+function openDetail(id) {
+  document.getElementById('d-'+id).classList.add('open');
+}
+function closeDetail(id) {
+  document.getElementById('d-'+id).classList.remove('open');
+}
+</script>
+</body>
+</html>
