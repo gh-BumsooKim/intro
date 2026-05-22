@@ -2,982 +2,1187 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
 <title>Bumsoo Kim</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-:root {
-  --ink: #111;
-  --muted: #555;
-  --faint: #999;
-  --border: #DDD;
-  --bg: #F8F8F7;
-  --white: #FFF;
-  --blue: #1A4A8A;
-  --blue-lt: #E8EFF8;
-  --green-lt: #E8F5EE;
-  --green: #2A7A4A;
-  --purple-lt: #F0EAF8;
-  --purple: #6A3AAA;
-  --W: 960px;
-  --H: 540px;
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#111;--muted:#444;--faint:#888;
+  --border:#DDD;--bg:#F7F6F2;--white:#FFF;
+  --navy:#1A3A6A;--blue:#1A4A8A;--teal:#1B7A6E;
+  --edu-c:#1A4A8A;--ind-c:#1B7A6E;
+}
+html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);
+  font-family:Georgia,'Times New Roman',serif;color:var(--ink)}
+.page{position:fixed;inset:0;display:none;flex-direction:column}
+.page.active{display:flex}
+.pdots{position:fixed;bottom:16px;right:22px;display:flex;gap:10px;z-index:400}
+.pdot{width:13px;height:13px;border-radius:50%;background:rgba(0,0,0,.2);cursor:pointer;border:none;transition:background .2s}
+.pdot.on{background:var(--blue)}
+.phint{position:fixed;bottom:17px;left:50%;transform:translateX(-50%);font-size:13px;color:rgba(0,0,0,.3);font-style:italic;z-index:400}
+
+/* ─── TOP BAR (shared) ─── */
+.top-bar{display:flex;align-items:stretch;flex-shrink:0;border-bottom:2px solid var(--border)}
+.tb-name{background:var(--navy);padding:14px 26px;display:flex;flex-direction:column;justify-content:center;min-width:210px}
+.tb-n1{font-size:24px;font-weight:bold;color:#fff;line-height:1.1}
+.tb-n2{font-size:12.5px;color:rgba(255,255,255,.58);font-style:italic;margin-top:3px}
+.tb-ind{background:var(--teal);display:flex;align-items:center;padding:0 14px;gap:7px;flex:1;overflow:hidden}
+.tb-lbl{font-size:13.5px;font-weight:bold;color:#fff;flex-shrink:0;margin-right:5px}
+.co-pill{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:9px;padding:5px 12px;flex-shrink:0}
+.co-logo{height:32px;width:auto;max-width:100px;object-fit:contain;flex-shrink:0}
+.co-tag{font-size:10px;color:rgba(255,255,255,.62);font-style:italic;border-left:1px solid rgba(255,255,255,.22);padding-left:7px}
+
+/* ═══════════ PAGE 1 ═══════════ */
+#page1{background:var(--white)}
+.p1-body{flex:1;display:flex;overflow:hidden}
+
+/* left sidebar */
+.p1-left{width:262px;flex-shrink:0;background:var(--bg);border-right:1px solid var(--border);
+  padding:18px 16px 14px;display:flex;flex-direction:column;gap:13px;overflow-y:auto}
+.profile-wrap{display:flex;justify-content:center}
+.profile-img{width:108px;height:108px;border-radius:50%;object-fit:cover;
+  border:3px solid var(--blue);box-shadow:0 2px 12px rgba(26,58,92,.18)}
+.sec-lbl{font-size:9.5px;letter-spacing:.15em;text-transform:uppercase;color:var(--faint);
+  margin-bottom:7px;padding-bottom:4px;border-bottom:1px solid var(--border)}
+.cite-grid{display:grid;grid-template-columns:repeat(3,1fr);background:var(--white);
+  border:1px solid var(--border);border-radius:5px;overflow:hidden}
+.cite-cell{text-align:center;padding:11px 4px;border-right:1px solid var(--border)}
+.cite-cell:last-child{border-right:none}
+.cite-n{font-size:27px;font-weight:bold;color:var(--blue);line-height:1}
+.cite-l{font-size:9.5px;color:var(--faint);letter-spacing:.06em;margin-top:3px}
+.fw{display:flex;flex-wrap:wrap;gap:5px}
+.fc{font-size:11px;background:var(--white);color:var(--blue);border:1px solid #C0D4EC;border-radius:20px;padding:4px 10px;font-style:italic}
+.rev-list{list-style:none;display:flex;flex-direction:column;gap:5px}
+.rev-list li{font-size:11.5px;color:var(--muted);display:flex;gap:8px;align-items:baseline}
+.rev-yr{font-size:10px;color:var(--faint);font-style:italic;min-width:34px}
+.p1-url{font-size:11px;color:var(--blue);font-style:italic;margin-top:auto}
+
+/* ── HORIZONTAL TIMELINE (right panel) ── */
+.p1-right{flex:1;display:flex;flex-direction:column;overflow:hidden;padding:0}
+
+/* fixed axis bar — middle */
+.tl-axis-bar{
+  flex-shrink:0;
+  height:60px;
+  position:relative;
+  padding:0 36px;
+  background:var(--white);
+  z-index:0;
+}
+.tl-axis-line{
+  position:absolute;
+  top:50%;left:36px;right:36px;
+  height:4px;background:#AAA;border-radius:2px;
+  transform:translateY(-50%);
+}
+.tl-year-marks{
+  position:absolute;top:0;left:36px;right:36px;bottom:0;
+  pointer-events:none;
+}
+.tl-yr-mark{
+  position:absolute;top:50%;transform:translate(-50%,-50%);
+  display:flex;flex-direction:column;align-items:center;gap:0;
+}
+.tl-yr-tick{width:3px;height:14px;background:var(--ink);border-radius:1px;opacity:.65}
+.tl-yr-label{font-size:18px;font-weight:bold;color:var(--ink);margin-top:4px;white-space:nowrap;opacity:.9}
+
+/* row: fills remaining space (flex:1) */
+.tl-row{
+  flex:1;min-height:0;
+  position:relative;
+  padding:12px 36px 8px;
+  overflow:visible;
+  z-index:1;
+}
+/* edu row: items near axis (bottom), fixed card height aligns badges */
+.tl-row#edu-row{ display:flex;flex-direction:column;justify-content:flex-end; }
+/* ind row: content rises UP from its top edge (near the axis) */
+.tl-row#ind-row{ display:flex;flex-direction:column;justify-content:flex-start; }
+
+.tl-h-items{
+  position:relative;
+  width:100%;
+  height:260px;
+  flex-shrink:0;
 }
 
-body {
-  background: #222;
-  font-family: 'Inter', sans-serif;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 28px 16px 44px;
-  gap: 14px;
-  min-height: 100vh;
+/* each timeline card */
+.tl-h-card{
+  position:absolute;
+  display:flex;flex-direction:column;
+  min-width:140px;
+  max-width:380px;
+  padding-right:6px;
 }
 
-/* ── DECK ── */
-.deck { position: relative; width: var(--W); max-width: 100%; }
+/* card content — slightly larger fonts */
+.tl-h-badge{display:inline-block;font-size:15px;font-weight:bold;letter-spacing:.05em;
+  text-transform:uppercase;border-radius:5px;padding:5px 14px;margin-bottom:8px}
+.be{background:#E8EFF8;color:var(--edu-c)}
+.bw{background:#E0F4F0;color:var(--ind-c)}
+.tl-h-title{font-size:20px;font-weight:bold;color:var(--ink);line-height:1.3;margin-bottom:5px}
+.tl-h-org{display:flex;align-items:center;gap:7px;margin-bottom:4px;flex-wrap:wrap}
+.tl-h-orgname{font-size:16px;color:var(--teal);font-style:italic}
+.tl-h-logo{height:52px;width:auto;max-width:160px;object-fit:contain;flex-shrink:0}
+.tl-h-desc{font-size:15px;color:var(--muted);line-height:1.65}
 
-.slide {
-  display: none;
-  width: var(--W); max-width: 100%;
-  height: var(--H);
-  background: var(--white);
-  border-radius: 3px;
-  box-shadow: 0 6px 28px rgba(0,0,0,.55);
-  overflow: hidden;
-  position: relative;
-}
-.slide.active { display: flex; animation: pop .22s ease; }
-@keyframes pop { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:none; } }
+/* edu cards: bottom-anchored near axis, fixed height = items height for badge alignment */
+#edu-row .tl-h-card{ bottom:0;top:auto;height:260px;overflow:hidden; }
+/* ind cards: anchored TOP (near axis) */
+#ind-row .tl-h-card{ top:0;bottom:auto;height:auto; }
 
-/* ── LEFT PANEL (sidebar) ── */
-.lp {
-  width: 172px;
-  flex-shrink: 0;
-  background: var(--bg);
-  border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  padding: 20px 16px;
-  gap: 0;
+/* dot connecting card to axis line */
+.tl-h-dot{
+  position:absolute;
+  width:11px;height:11px;border-radius:50%;background:var(--white);
+  border:2.5px solid;z-index:2;
+  left:50%;transform:translateX(-50%);
 }
-.lp-name { font-size: 15px; font-weight: 700; color: var(--blue); line-height: 1.2; margin-bottom: 2px; }
-.lp-role { font-size: 10px; color: var(--muted); line-height: 1.4; margin-bottom: 14px; }
-.lp-section {
-  font-family: 'DM Mono', monospace;
-  font-size: 8px;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: var(--faint);
-  margin-bottom: 6px;
-  margin-top: 14px;
-}
-.lp-section:first-of-type { margin-top: 0; }
-.lp-row { font-size: 11px; color: var(--muted); line-height: 1.5; margin-bottom: 2px; }
-.lp-row b { color: var(--ink); font-weight: 600; }
-.lp-pub { font-size: 10.5px; color: var(--muted); line-height: 1.6; }
-.lp-pub span { color: var(--ink); font-weight: 500; }
-.lp-fields { font-size: 10.5px; color: var(--muted); line-height: 1.6; }
-.lp-url { margin-top: auto; font-size: 9px; color: var(--blue); font-family: 'DM Mono', monospace; }
+/* edu: dot sits just inside the card bottom, fully visible above axis */
+#edu-row .tl-h-dot{ bottom:4px; }
+/* ind: dot at top of card */
+#ind-row .tl-h-dot{ top:-6px; }
 
-/* ── MAIN CONTENT ── */
-.main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
+/* MS thesis mini card */
+.thesis-mini{margin-top:7px;background:var(--bg);border:1px solid var(--border);
+  border-radius:4px;padding:8px;display:flex;gap:8px}
+.thesis-mini-img{width:120px;height:110px;object-fit:contain;flex-shrink:0;
+  border:1px solid var(--border);border-radius:2px;background:var(--white)}
+.thesis-mini-t{font-size:13.5px;font-weight:bold;color:var(--ink);line-height:1.4}
 
-/* slide top bar */
-.sbar {
-  background: var(--blue);
-  padding: 8px 20px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex-shrink: 0;
+/* BS artwork: 2 rows × 3 cols grid — smaller images so card height matches MS */
+.art-grid-2x3{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:5px;margin-top:7px;
+  width:100%;
 }
-.sbar h2 { font-size: 12px; font-weight: 600; color: #fff; letter-spacing: .04em; }
-.sbar .sep { color: rgba(255,255,255,.3); font-size: 11px; }
-.sbar .desc { font-size: 11px; color: rgba(255,255,255,.55); font-style: italic; }
-.sbar .pg { margin-left: auto; font-family: 'DM Mono', monospace; font-size: 9px; color: rgba(255,255,255,.35); }
+.art-th2{width:100%;height:62px;object-fit:cover;border-radius:2px;border:1px solid var(--border);display:block}
 
-.sbody { flex: 1; padding: 14px 18px 12px; overflow: hidden; display: flex; flex-direction: column; gap: 10px; }
+/* nav hint */
+.tl-nav-hint{
+  flex-shrink:0;padding:6px 0;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  font-size:11.5px;color:var(--faint);font-style:italic;
+  border-top:1px solid var(--border);background:var(--white);
+  transition:opacity .35s;
+}
+.tl-nav-hint.hidden{opacity:0;pointer-events:none}
+.arrow-key{display:inline-flex;align-items:center;justify-content:center;
+  width:20px;height:20px;border:1.5px solid var(--faint);border-radius:4px;font-size:11px}
 
-/* ── INDUSTRY STRIP ── */
-.industry-strip {
-  display: flex;
-  gap: 8px;
-}
-.ind-card {
-  flex: 1;
-  border: 1px solid var(--border);
-  border-radius: 3px;
-  padding: 10px 12px;
-  background: var(--white);
-}
-.ind-card .ind-org { font-size: 11px; font-weight: 700; color: var(--ink); margin-bottom: 2px; }
-.ind-card .ind-tag {
-  font-family: 'DM Mono', monospace;
-  font-size: 8.5px;
-  color: var(--blue);
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  margin-bottom: 4px;
-}
-.ind-card .ind-desc { font-size: 10.5px; color: var(--muted); line-height: 1.5; }
+/* industry row hidden initially — slides down from axis */
+.ind-row{transition:opacity .55s ease,transform .55s ease}
+.ind-row.hidden{opacity:0;transform:translateY(-20px);pointer-events:none}
 
-/* ── PAPER GRID ── */
-.paper-area { flex: 1; display: flex; gap: 10px; overflow: hidden; }
-.paper-col { display: flex; flex-direction: column; gap: 8px; }
-.paper-col.col2 { flex: 1; }
-.paper-col.col3 { flex: 1.3; }
-.col-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 8.5px;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: var(--faint);
-  padding-bottom: 4px;
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-}
+.misc-row{flex-shrink:0;padding:8px 32px;font-size:12.5px;color:var(--muted);font-style:italic;
+  border-top:1px solid var(--border);background:var(--bg)}
 
-.pcard {
-  border: 1px solid var(--border);
-  border-radius: 3px;
-  display: flex;
-  gap: 10px;
-  padding: 8px 10px;
-  cursor: pointer;
-  transition: border-color .15s, box-shadow .15s;
-  background: var(--white);
-  flex-shrink: 0;
+/* ═══════════ PAGE 2 ═══════════ */
+@keyframes svgFadeIn{
+  from{opacity:0}
+  to{opacity:.84}
 }
-.pcard:hover { border-color: var(--blue); box-shadow: 0 2px 8px rgba(26,74,138,.12); }
-.pcard img {
-  width: 64px; height: 42px;
-  object-fit: cover;
-  border-radius: 2px;
-  flex-shrink: 0;
-  background: var(--bg);
-  border: 1px solid var(--border);
+@keyframes svgFadeSlideIn{
+  from{opacity:0;transform:translateY(10px)}
+  to{opacity:1;transform:translateY(0)}
 }
-.pcard-info { flex: 1; min-width: 0; }
-.pcard-venue {
-  font-family: 'DM Mono', monospace;
-  font-size: 8px;
-  color: var(--blue);
-  letter-spacing: .08em;
-  text-transform: uppercase;
-  margin-bottom: 2px;
-  display: flex; align-items: center; gap: 5px;
+@keyframes htmlFadeIn{
+  from{opacity:0}
+  to{opacity:1}
 }
-.badge {
-  font-family: 'DM Mono', monospace;
-  font-size: 7.5px;
-  padding: 1px 5px;
-  border-radius: 2px;
-  font-style: normal;
-}
-.bd-oral { background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; }
-.bd-if   { background: #D1FAE5; color: #065F46; border: 1px solid #6EE7B7; }
-.bd-rv   { background: #F3F4F6; color: #6B7280; border: 1px solid #D1D5DB; }
-.pcard-title { font-size: 11px; font-weight: 500; color: var(--ink); line-height: 1.35; }
-.pcard-hint {
-  font-size: 9px;
-  color: var(--blue);
-  margin-top: 3px;
-  opacity: 0;
-  transition: opacity .15s;
-}
-.pcard:hover .pcard-hint { opacity: 1; }
+#page2{background:var(--white)}
+.pubs-bar{background:var(--blue);padding:9px 26px;flex-shrink:0;display:flex;align-items:center;gap:13px}
+.pubs-bar h2{font-size:16.5px;font-weight:bold;color:#fff}
+.pubs-bar .hint{font-size:12.5px;font-style:italic;color:rgba(255,255,255,.48)}
+.legend{display:flex;gap:16px;margin-left:auto}
+.leg-item{display:flex;align-items:center;gap:6px}
+.leg-dot{width:12px;height:12px;border-radius:50%}
+.leg-lbl{font-size:11.5px;color:rgba(255,255,255,.75);font-style:italic}
+.svg-wrap{flex:1;position:relative;overflow:hidden}
+#pub-svg{width:100%;height:100%;display:block}
+.stn-hit{position:absolute;transform:translate(-50%,-50%);cursor:pointer;z-index:10}
 
-/* ── DETAIL OVERLAY ── */
-.detail-overlay {
-  display: none;
-  position: absolute;
-  inset: 0;
-  background: var(--white);
-  z-index: 10;
-  flex-direction: column;
-  animation: pop .2s ease;
-}
-.detail-overlay.open { display: flex; }
-.detail-header {
-  background: var(--blue);
-  padding: 10px 18px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.detail-header h3 { font-size: 12px; font-weight: 600; color: #fff; flex: 1; line-height: 1.35; }
-.back-btn {
-  font-family: 'DM Mono', monospace;
-  font-size: 9px;
-  color: rgba(255,255,255,.7);
-  background: rgba(255,255,255,.1);
-  border: 1px solid rgba(255,255,255,.2);
-  border-radius: 2px;
-  padding: 4px 10px;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: background .15s;
-}
-.back-btn:hover { background: rgba(255,255,255,.2); }
-.detail-body {
-  flex: 1;
-  display: flex;
-  gap: 0;
-  overflow: hidden;
-}
-.detail-left {
-  width: 280px;
-  flex-shrink: 0;
-  padding: 16px 18px;
-  border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  overflow-y: auto;
-  background: var(--bg);
-}
-.detail-right {
-  flex: 1;
-  padding: 16px 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  overflow-y: auto;
-}
-.d-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 8px;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  color: var(--faint);
-  margin-bottom: 4px;
-}
-.d-val { font-size: 12px; color: var(--ink); line-height: 1.6; }
-.d-val b { color: var(--blue); }
-.detail-img {
-  width: 100%;
-  border-radius: 3px;
-  border: 1px solid var(--border);
-  object-fit: contain;
-  max-height: 160px;
-  background: var(--bg);
-}
-.contrib-list { list-style: none; display: flex; flex-direction: column; gap: 5px; }
-.contrib-list li {
-  font-size: 11.5px;
-  color: var(--muted);
-  line-height: 1.5;
-  padding-left: 10px;
-  border-left: 2px solid var(--blue);
-}
-.tag-row-d { display: flex; flex-wrap: wrap; gap: 5px; }
-.tag-d {
-  font-family: 'DM Mono', monospace;
-  font-size: 8.5px;
-  background: var(--blue-lt);
-  color: var(--blue);
-  border: 1px solid #C5D5E8;
-  border-radius: 2px;
-  padding: 2px 7px;
-}
+/* mini hover card */
+.hcard{display:none;position:fixed;z-index:500;width:400px;background:var(--white);
+  border:1px solid var(--border);border-radius:6px;box-shadow:0 8px 32px rgba(0,0,0,.2);
+  pointer-events:none;flex-direction:column;animation:hpop .14s ease;cursor:pointer}
+.hcard.on{display:flex;pointer-events:auto}
+@keyframes hpop{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.hc-bar{height:5px;border-radius:6px 6px 0 0;flex-shrink:0}
+.hc-hdr{padding:10px 13px 8px;border-bottom:1px solid var(--border)}
+.hc-venue{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:2px}
+.hc-tsm{font-size:13px;font-weight:bold;color:var(--ink);line-height:1.35}
+.hc-preview{display:flex}
+.hc-img-w{width:120px;flex-shrink:0;background:var(--bg);border-right:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;padding:8px;min-height:80px}
+.hc-img-w img{max-width:100%;max-height:86px;object-fit:contain}
+.hc-snip{flex:1;padding:9px 12px;font-size:11px;color:var(--muted);line-height:1.65;font-style:italic}
+.hc-footer{padding:7px 13px;border-top:1px solid var(--border);background:var(--bg);
+  display:flex;align-items:center;justify-content:space-between;border-radius:0 0 6px 6px}
+.hc-auth{font-size:10px;color:var(--faint);font-style:italic}
+.hc-hint{font-size:10px;color:var(--blue);font-style:italic}
 
-/* ── CONTROLS ── */
-.controls {
-  display: flex; align-items: center; gap: 10px;
-  width: var(--W); max-width: 100%;
-}
-.prog { flex: 1; height: 2px; background: rgba(255,255,255,.08); border-radius: 2px; overflow: hidden; }
-.prog-fill { height: 100%; background: #4A7EC0; border-radius: 2px; transition: width .25s; }
-.btn {
-  background: rgba(255,255,255,.07);
-  border: 1px solid rgba(255,255,255,.14);
-  color: #BBB;
-  padding: 5px 14px;
-  border-radius: 3px;
-  cursor: pointer;
-  font-family: 'DM Mono', monospace;
-  font-size: 10px;
-  transition: background .15s;
-}
-.btn:hover { background: rgba(255,255,255,.14); }
-.btn:disabled { opacity: .3; cursor: default; }
-.ctr { font-family: 'DM Mono', monospace; font-size: 10px; color: rgba(255,255,255,.35); }
-
-.thumbs { display: flex; gap: 6px; width: var(--W); max-width: 100%; overflow-x: auto; }
-.thumbs::-webkit-scrollbar { height: 3px; }
-.thumbs::-webkit-scrollbar-thumb { background: rgba(255,255,255,.15); }
-.th {
-  font-family: 'DM Mono', monospace;
-  font-size: 8px;
-  letter-spacing: .06em;
-  text-transform: uppercase;
-  color: rgba(255,255,255,.3);
-  background: rgba(255,255,255,.04);
-  border: 1px solid rgba(255,255,255,.08);
-  border-radius: 2px;
-  padding: 4px 10px;
-  cursor: pointer;
-  flex-shrink: 0;
-  transition: all .15s;
-}
-.th:hover { color: rgba(255,255,255,.6); }
-.th.active { color: #7BAED8; border-color: #3A6EA8; background: rgba(74,126,192,.12); }
-
-/* accent line */
-.aline { position: absolute; bottom: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, var(--blue), #5A8FC0); }
+/* modal */
+.moverlay{display:none;position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.55);
+  backdrop-filter:blur(4px);align-items:center;justify-content:center;animation:fin .2s ease}
+.moverlay.open{display:flex}
+@keyframes fin{from{opacity:0}to{opacity:1}}
+.modal{width:88vw;max-width:1220px;height:86vh;background:var(--white);border-radius:8px;
+  box-shadow:0 20px 80px rgba(0,0,0,.4);display:flex;flex-direction:column;overflow:hidden;animation:mpin .22s ease}
+@keyframes mpin{from{opacity:0;transform:scale(.97)}to{opacity:1;transform:none}}
+.m-hdr{display:flex;align-items:stretch;flex-shrink:0;border-bottom:1px solid var(--border)}
+.m-cbar{width:7px;flex-shrink:0;border-radius:8px 0 0 0}
+.m-hdr-txt{flex:1;padding:14px 18px}
+.m-venue{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:3px}
+.m-title{font-size:19px;font-weight:bold;color:var(--ink);line-height:1.3}
+.m-badges{display:flex;flex-wrap:wrap;gap:7px;margin-top:8px}
+.m-badge{font-size:11.5px;font-weight:bold;padding:3px 12px;border-radius:20px}
+.m-links{display:flex;flex-wrap:wrap;gap:7px;margin-top:7px}
+.m-link{font-size:11.5px;color:var(--blue);text-decoration:none;background:var(--bg);
+  border:1px solid #C0D4EC;border-radius:20px;padding:3px 11px;font-style:italic}
+.m-close{padding:12px 20px;cursor:pointer;font-size:21px;color:var(--faint);
+  background:none;border:none;font-family:Georgia,serif;display:flex;align-items:center}
+.m-close:hover{color:var(--ink)}
+.m-body{flex:1;display:flex;overflow:hidden}
+.m-left{width:38%;flex-shrink:0;border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.m-teaser-wrap{flex:1;background:var(--bg);display:flex;align-items:center;justify-content:center;
+  padding:16px;overflow:hidden;position:relative;min-height:0}
+.m-teaser-wrap img{max-width:100%;max-height:100%;object-fit:contain}
+.m-slot-lbl{position:absolute;bottom:6px;left:8px;font-size:8px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--faint);background:rgba(255,255,255,.85);padding:2px 6px;border-radius:3px}
+.m-upzone{position:absolute;bottom:6px;right:8px}
+.m-uplbl{font-size:9px;color:var(--blue);background:rgba(255,255,255,.9);
+  border:1px dashed #93C5FD;border-radius:4px;padding:3px 9px;cursor:pointer;font-style:italic}
+.m-upinput{display:none}
+.m-meta{padding:12px 16px;background:var(--white);flex-shrink:0;border-top:1px solid var(--border)}
+.m-authors{font-size:12px;color:var(--muted);margin-bottom:5px}
+.m-authors b{color:var(--ink);font-weight:bold}
+.m-cross-row{display:flex;gap:7px;flex-wrap:wrap;margin-top:5px}
+.m-cross-chip{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);font-style:italic}
+.m-cross-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.m-text{flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:16px}
+.m-text::-webkit-scrollbar{width:4px}
+.m-text::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
+.m-lbl{font-size:9px;letter-spacing:.15em;text-transform:uppercase;color:var(--faint);
+  margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid var(--border)}
+.m-abstract{font-size:13.5px;color:var(--muted);line-height:1.82;font-style:italic;border-left:4px solid var(--blue);padding-left:14px}
+.m-cl{list-style:none;display:flex;flex-direction:column;gap:6px}
+.m-cl li{font-size:13px;color:var(--muted);line-height:1.6;padding-left:12px;border-left:3px solid var(--blue)}
+.m-tags{display:flex;flex-wrap:wrap;gap:6px}
+.m-tag{font-size:11px;background:#EBF2FA;color:var(--blue);border:1px solid #C0D4EC;border-radius:20px;padding:3px 11px;font-style:italic}
+.m-rimg-wrap{width:100%;border:1px solid var(--border);border-radius:4px;overflow:hidden;background:var(--bg)}
+.m-rimg-wrap img{width:100%;display:block;object-fit:contain;max-height:260px}
+.m-upload-row{display:flex;gap:8px;align-items:center;margin-top:5px}
+.m-uplbl2{font-size:9.5px;color:var(--blue);background:var(--bg);
+  border:1px dashed #93C5FD;border-radius:4px;padding:3px 8px;cursor:pointer;font-style:italic}
 </style>
 </head>
 <body>
 
-<div class="deck">
-
-<!-- ════════════════════════════════════
-     SLIDE 1 — OVERVIEW
-════════════════════════════════════ -->
-<div class="slide active" id="s1">
-  <div class="lp">
-    <div class="lp-name">Bumsoo Kim</div>
-    <div class="lp-role">GenAI + Graphics<br>Researcher</div>
-
-    <div class="lp-section">Education</div>
-    <div class="lp-row"><b>B.S.</b> Art &amp; Technology,<br>EE — CAU</div>
-    <div class="lp-row" style="margin-top:6px"><b>M.S.</b> Applied Art &amp;<br>Technology — CAU</div>
-
-    <div class="lp-section">1st-authored</div>
-    <div class="lp-pub">
-      <span>NeurIPS:W 23 🏆</span><br>
-      <span>CVPR:W 24</span><br>
-      <span>AAAI:W 25 🏆</span><br>
-      <span>WACV 25</span><br>
-      <span>ICASSP 26</span><br>
-      4+ SCIE journals
-    </div>
-
-    <div class="lp-section">Research Fields</div>
-    <div class="lp-fields">Computer vision,<br>computer graphics</div>
-    <div class="lp-fields" style="margin-top:4px">Image / video / 3D<br>editing, generation</div>
-
-    <div class="lp-url">bumsookim00.com</div>
-  </div>
-
-  <div class="main">
-    <div class="sbar">
-      <h2>Industry</h2>
-      <span class="pg">01 / 04</span>
-    </div>
-    <div class="sbody">
-
-      <!-- Industry strip -->
-      <div class="industry-strip">
-        <div class="ind-card">
-          <div class="ind-org">ETRI</div>
-          <div class="ind-tag">SafeAI</div>
-          <div class="ind-desc">Object detection &amp; tracking</div>
-        </div>
-        <div class="ind-card">
-          <div class="ind-org">VIVE STUDIOS</div>
-          <div class="ind-tag">FilmAI</div>
-          <div class="ind-desc">Face swapping / re-aging</div>
-        </div>
-        <div class="ind-card">
-          <div class="ind-org">Boeing Research</div>
-          <div class="ind-tag">ManufacturingAI</div>
-          <div class="ind-desc">Anomaly detection</div>
-        </div>
-        <div class="ind-card">
-          <div class="ind-org">Smilegate AI</div>
-          <div class="ind-tag">Vision AI</div>
-          <div class="ind-desc">Game content generation</div>
-        </div>
-      </div>
-
-      <!-- 3-column paper grid -->
-      <div class="paper-area">
-        <!-- 2D -->
-        <div class="paper-col col2">
-          <div class="col-label">2D</div>
-          <div class="pcard" onclick="openDetail('toonaging')">
-            <img src="https://bumsookim00.com/asset/images/toonaging.gif" alt="">
-            <div class="pcard-info">
-              <div class="pcard-venue">CVPR:W 2024</div>
-              <div class="pcard-title">ToonAging</div>
-              <div class="pcard-hint">View details →</div>
-            </div>
-          </div>
-          <div class="pcard" onclick="openDetail('minecraftify')">
-            <img src="https://bumsookim00.com/asset/images/minecraftify.png" alt="">
-            <div class="pcard-info">
-              <div class="pcard-venue">NeurIPS:W 2023 <span class="badge bd-oral">Oral</span></div>
-              <div class="pcard-title">Minecraft-ify</div>
-              <div class="pcard-hint">View details →</div>
-            </div>
-          </div>
-          <div class="pcard" onclick="openDetail('style')">
-            <img src="https://bumsookim00.com/asset/images/styletransfer.png" alt="">
-            <div class="pcard-info">
-              <div class="pcard-venue">CMES 2024 <span class="badge bd-if">Q2</span></div>
-              <div class="pcard-title">Patchified AdaIN</div>
-              <div class="pcard-hint">View details →</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Video -->
-        <div class="paper-col col3">
-          <div class="col-label">Video</div>
-          <div class="pcard" onclick="openDetail('videott')">
-            <img src="https://bumsookim00.com/asset/images/videotimetravel.gif" alt="">
-            <div class="pcard-info">
-              <div class="pcard-venue">Visual Computer 2026 <span class="badge bd-if">IF 2.9</span></div>
-              <div class="pcard-title">VideoTimeTravel</div>
-              <div class="pcard-hint">View details →</div>
-            </div>
-          </div>
-          <div class="pcard" onclick="openDetail('makevlm')">
-            <img src="https://bumsookim00.com/asset/images/makevlm.png" alt="">
-            <div class="pcard-info">
-              <div class="pcard-venue">WACV 2025</div>
-              <div class="pcard-title">Make VLM Recognize Hallucination</div>
-              <div class="pcard-hint">View details →</div>
-            </div>
-          </div>
-          <div class="pcard" onclick="openDetail('vfra')">
-            <img src="https://bumsookim00.com/asset/images/vfra.gif" alt="">
-            <div class="pcard-info">
-              <div class="pcard-venue">arXiv 2023</div>
-              <div class="pcard-title">Video Face Re-Aging</div>
-              <div class="pcard-hint">View details →</div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 3D / Audio -->
-        <div class="paper-col col2">
-          <div class="col-label">3D · Audio</div>
-          <div class="pcard" onclick="openDetail('sounds')">
-            <img src="https://bumsookim00.com/asset/images/soundsthatshape.gif" alt="">
-            <div class="pcard-info">
-              <div class="pcard-venue">ICASSP 2026</div>
-              <div class="pcard-title">Sounds That Shape</div>
-              <div class="pcard-hint">View details →</div>
-            </div>
-          </div>
-          <div class="pcard" onclick="openDetail('taming')">
-            <img src="https://bumsookim00.com/asset/images/taminggaussian.png" alt="">
-            <div class="pcard-info">
-              <div class="pcard-venue">CGI 2026 <span class="badge bd-rv">Review</span></div>
-              <div class="pcard-title">Taming Gaussian</div>
-              <div class="pcard-hint">View details →</div>
-            </div>
-          </div>
-          <div class="pcard" onclick="openDetail('flood')">
-            <img src="https://bumsookim00.com/asset/images/multifloodsynth.gif" alt="">
-            <div class="pcard-info">
-              <div class="pcard-venue">AAAI:W 2025 <span class="badge bd-oral">Oral</span></div>
-              <div class="pcard-title">MultiFloodSynth</div>
-              <div class="pcard-hint">View details →</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-    </div><!-- sbody -->
-    <div class="aline"></div>
-  </div><!-- main -->
-
-  <!-- ── DETAIL OVERLAYS ── -->
-
-  <div class="detail-overlay" id="d-toonaging">
-    <div class="detail-header">
-      <h3>ToonAging: Face Re-Aging upon Artistic Portrait Style Transfer</h3>
-      <button class="back-btn" onclick="closeDetail('toonaging')">← Back</button>
-    </div>
-    <div class="detail-body">
-      <div class="detail-left">
-        <div>
-          <div class="d-label">Venue</div>
-          <div class="d-val"><b>CVPR AI4CC Workshop 2024</b></div>
-        </div>
-        <div>
-          <div class="d-label">Authors</div>
-          <div class="d-val" style="font-size:11px"><b>B. Kim</b>, A. Muqeet, K. Lee, S. Seo</div>
-        </div>
-        <img class="detail-img" src="https://bumsookim00.com/asset/images/toonaging.gif" alt="">
-        <div>
-          <div class="d-label">Keywords</div>
-          <div class="tag-row-d">
-            <span class="tag-d">Face Re-aging</span>
-            <span class="tag-d">Style Transfer</span>
-            <span class="tag-d">Diffusion</span>
-            <span class="tag-d">Toon</span>
-          </div>
-        </div>
-      </div>
-      <div class="detail-right">
-        <div>
-          <div class="d-label">Problem</div>
-          <div class="d-val">Existing re-aging methods fail on artistic / cartoon-style portraits — they assume photorealistic inputs.</div>
-        </div>
-        <div>
-          <div class="d-label">Method</div>
-          <div class="d-val">Decouples style transfer and age editing: first transfer portrait style, then apply diffusion-based re-aging conditioned on the artistic domain.</div>
-        </div>
-        <div>
-          <div class="d-label">Key Contributions</div>
-          <ul class="contrib-list">
-            <li>Domain-aware face re-aging pipeline for artistic portraits</li>
-            <li>Disentanglement of style and age attributes in latent space</li>
-            <li>Works across toon, painting, and sketch styles</li>
-          </ul>
-        </div>
-        <div>
-          <div class="d-label">Application</div>
-          <div class="d-val">Film VFX, animation studios, entertainment content creation.</div>
-        </div>
-      </div>
+<!-- ══════════ PAGE 1 ══════════ -->
+<div class="page active" id="page1">
+  <div class="top-bar">
+    <div class="tb-name"><div class="tb-n1">Bumsoo Kim</div><div class="tb-n2">GenAI + Graphics Researcher</div></div>
+    <div class="tb-ind">
+      <div class="tb-lbl">Industry</div>
+      <div class="co-pill"><img class="co-logo" src="etri_logo.png" alt="ETRI"><span class="co-tag">SafeAI</span></div>
+      <div class="co-pill"><img class="co-logo" src="vive_logo.png" alt="VIVE STUDIOS"><span class="co-tag">FilmAI</span></div>
+      <div class="co-pill"><img class="co-logo" src="boeing_logo.png" alt="Boeing"><span class="co-tag">ManufacturingAI</span></div>
+      <div class="co-pill"><img class="co-logo" src="https://www.smilegate.com/assets/img/company/about/logo_smilegate_en.png" alt="Smilegate"><span class="co-tag">Vision AI</span></div>
     </div>
   </div>
 
-  <div class="detail-overlay" id="d-minecraftify">
-    <div class="detail-header">
-      <h3>Minecraft-ify: Minecraft Style Image Generation with Text-guided Image Editing</h3>
-      <button class="back-btn" onclick="closeDetail('minecraftify')">← Back</button>
-    </div>
-    <div class="detail-body">
-      <div class="detail-left">
-        <div>
-          <div class="d-label">Venue</div>
-          <div class="d-val"><b>NeurIPS ML4CD Workshop 2023</b> — Oral (Top 8.7%)</div>
+  <div class="p1-body">
+    <!-- ── Left sidebar ── -->
+    <div class="p1-left">
+      <div class="profile-wrap">
+        <img class="profile-img" src="https://bumsookim00.com/asset/images/cvpr2024.jpg" alt="Bumsoo Kim" onerror="this.style.display='none'">
+      </div>
+      <div>
+        <div class="sec-lbl">Google Scholar</div>
+        <div class="cite-grid">
+          <div class="cite-cell"><div class="cite-n">471</div><div class="cite-l">Citations</div></div>
+          <div class="cite-cell"><div class="cite-n">7</div><div class="cite-l">h-index</div></div>
+          <div class="cite-cell"><div class="cite-n">7</div><div class="cite-l">i10-index</div></div>
         </div>
-        <div>
-          <div class="d-label">Authors</div>
-          <div class="d-val" style="font-size:11px"><b>B. Kim</b>, S. Byun, Y. Jung, W. Shin, S. Amin, S. Seo</div>
-        </div>
-        <img class="detail-img" src="https://bumsookim00.com/asset/images/minecraftify.png" alt="">
-        <div>
-          <div class="d-label">Keywords</div>
-          <div class="tag-row-d">
-            <span class="tag-d">Text-guided</span>
-            <span class="tag-d">Style Transfer</span>
-            <span class="tag-d">Gaming</span>
-            <span class="tag-d">In-game AI</span>
+      </div>
+      <!-- Fun research stats -->
+      <div>
+        <div class="sec-lbl">Research at a Glance</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div style="background:var(--white);border:1px solid var(--border);border-radius:5px;padding:10px 8px;text-align:center;">
+            <div style="font-size:26px;font-weight:bold;color:var(--blue);line-height:1;">11</div>
+            <div style="font-size:9.5px;color:var(--faint);letter-spacing:.07em;margin-top:3px;">Papers</div>
+          </div>
+          <div style="background:var(--white);border:1px solid var(--border);border-radius:5px;padding:10px 8px;text-align:center;">
+            <div style="font-size:26px;font-weight:bold;color:var(--blue);line-height:1;">5</div>
+            <div style="font-size:9.5px;color:var(--faint);letter-spacing:.07em;margin-top:3px;">Yrs Researching</div>
+          </div>
+          <div style="background:var(--white);border:1px solid var(--border);border-radius:5px;padding:10px 8px;text-align:center;">
+            <div style="font-size:26px;font-weight:bold;color:var(--blue);line-height:1;">13</div>
+            <div style="font-size:9.5px;color:var(--faint);letter-spacing:.07em;margin-top:3px;">Collaborators</div>
+          </div>
+          <div style="background:var(--white);border:1px solid var(--border);border-radius:5px;padding:10px 8px;text-align:center;">
+            <div style="font-size:26px;font-weight:bold;color:var(--blue);line-height:1;">4</div>
+            <div style="font-size:9.5px;color:var(--faint);letter-spacing:.07em;margin-top:3px;">Venues (Top-tier)</div>
+          </div>
+          <div style="background:var(--white);border:1px solid var(--border);border-radius:5px;padding:10px 8px;text-align:center;">
+            <div style="font-size:26px;font-weight:bold;color:var(--blue);line-height:1;">4</div>
+            <div style="font-size:9.5px;color:var(--faint);letter-spacing:.07em;margin-top:3px;">Internships</div>
+          </div>
+          <div style="background:var(--white);border:1px solid var(--border);border-radius:5px;padding:10px 8px;text-align:center;">
+            <div style="font-size:26px;font-weight:bold;color:var(--blue);line-height:1;">3</div>
+            <div style="font-size:9.5px;color:var(--faint);letter-spacing:.07em;margin-top:3px;">Orals / Spotlights</div>
           </div>
         </div>
       </div>
-      <div class="detail-right">
-        <div>
-          <div class="d-label">Problem</div>
-          <div class="d-val">Generating in-game assets in a consistent voxel/Minecraft aesthetic from arbitrary text prompts or reference images.</div>
-        </div>
-        <div>
-          <div class="d-label">Method</div>
-          <div class="d-val">Text-guided image editing pipeline fine-tuned on Minecraft asset distribution. Leverages IP-Adapter and domain-specific LoRA for stylistic consistency.</div>
-        </div>
-        <div>
-          <div class="d-label">Key Contributions</div>
-          <ul class="contrib-list">
-            <li>First text-driven Minecraft-style generation system</li>
-            <li>Custom dataset of Minecraft asset–natural image pairs</li>
-            <li>Deployable in-game as real-time asset generator</li>
-          </ul>
-        </div>
-        <div>
-          <div class="d-label">Application</div>
-          <div class="d-val">Procedural game content creation, rapid asset prototyping for game developers.</div>
+      <div>
+        <div class="sec-lbl">Research Topics</div>
+        <div class="fw">
+          <span class="fc">Diffusion Models</span><span class="fc">3D Gaussian Splatting</span>
+          <span class="fc">Face Re-aging</span><span class="fc">Neural Rendering</span>
+          <span class="fc">Style Transfer</span><span class="fc">Audio-to-3D</span>
+          <span class="fc">VLM / Multimodal</span><span class="fc">Synthetic Data</span>
         </div>
       </div>
+      <div>
+        <div class="sec-lbl">Conference Reviews</div>
+        <ul class="rev-list">
+          <li><span class="rev-yr">2026</span>ECCV 2026</li>
+          <li><span class="rev-yr">2025</span>AAAI 2026 · ICLR 2026 · ICASSP 2026</li>
+          <li><span class="rev-yr">2024</span>CVPR 2024 · ICLR 2025 · WACV 2025</li>
+        </ul>
+      </div>
+      <div class="p1-url">bumsookim00.com</div>
+    </div>
+
+    <!-- ── Right: horizontal timeline ── -->
+    <div class="p1-right">
+
+      <!-- EDUCATION row — always visible, top -->
+      <div class="tl-row" id="edu-row" style="flex:1;min-height:0">
+        <div class="tl-h-items" id="edu-items"></div>
+      </div>
+
+      <!-- axis bar — always fully visible, middle -->
+      <div class="tl-axis-bar" id="tl-axis-bar">
+        <div class="tl-axis-line"></div>
+        <div class="tl-year-marks" id="tl-year-marks"></div>
+      </div>
+
+      <!-- INDUSTRY row — hidden until → pressed, bottom -->
+      <div class="tl-row ind-row hidden" id="ind-row" style="flex:1;min-height:0">
+        <div class="tl-h-items" id="ind-items"></div>
+      </div>
+
+      <!-- nav hint -->
+      <div class="tl-nav-hint" id="tl-nav-hint">
+        <span class="arrow-key">→</span>
+        <span>Press → to reveal Industry history</span>
+        <span class="arrow-key">←</span>
+        <span>to hide</span>
+      </div>
+
+      <div class="misc-row" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>🎸 Former lead guitarist · fascinated by art, film &amp; music · planning solo interactive art exhibition.</span>
+        <span style="font-style:normal;display:flex;align-items:center;gap:14px;">
+          <span style="font-style:italic;color:var(--faint);">More details →</span>
+          <a href="https://bumsookim00.com" target="_blank" style="color:var(--blue);text-decoration:none;font-style:italic;border-bottom:1px solid #C0D4EC;">bumsookim00.com</a>
+        </span>
+      </div>
+
+    </div><!-- /p1-right -->
+  </div><!-- /p1-body -->
+</div><!-- /page1 -->
+
+
+<!-- ══════════ PAGE 2 ══════════ -->
+<div class="page" id="page2">
+  <div class="top-bar">
+    <div class="tb-name"><div class="tb-n1">Bumsoo Kim</div><div class="tb-n2">GenAI + Graphics Researcher</div></div>
+    <div class="tb-ind">
+      <div class="tb-lbl">Industry</div>
+      <div class="co-pill"><img class="co-logo" src="etri_logo.png" alt="ETRI"><span class="co-tag">SafeAI</span></div>
+      <div class="co-pill"><img class="co-logo" src="vive_logo.png" alt="VIVE"><span class="co-tag">FilmAI</span></div>
+      <div class="co-pill"><img class="co-logo" src="boeing_logo.png" alt="Boeing"><span class="co-tag">ManufacturingAI</span></div>
+      <div class="co-pill"><img class="co-logo" src="https://www.smilegate.com/assets/img/company/about/logo_smilegate_en.png" alt="Smilegate"><span class="co-tag">Vision AI</span></div>
     </div>
   </div>
-
-  <div class="detail-overlay" id="d-style">
-    <div class="detail-header">
-      <h3>Explicitly Color-Inspired Neural Style Transfer Using Patchified AdaIN</h3>
-      <button class="back-btn" onclick="closeDetail('style')">← Back</button>
-    </div>
-    <div class="detail-body">
-      <div class="detail-left">
-        <div>
-          <div class="d-label">Venue</div>
-          <div class="d-val"><b>CMES 2024</b> — Q2 Journal</div>
+  <!-- page2 body: same left sidebar + right content -->
+  <div class="p1-body">
+    <!-- same left sidebar as page1 -->
+    <div class="p1-left">
+      <div class="profile-wrap">
+        <img class="profile-img" src="https://bumsookim00.com/asset/images/cvpr2024.jpg" alt="Bumsoo Kim" onerror="this.style.display='none'">
+      </div>
+      <div>
+        <div class="sec-lbl">Google Scholar</div>
+        <div class="cite-grid">
+          <div class="cite-cell"><div class="cite-n">471</div><div class="cite-l">Citations</div></div>
+          <div class="cite-cell"><div class="cite-n">7</div><div class="cite-l">h-index</div></div>
+          <div class="cite-cell"><div class="cite-n">7</div><div class="cite-l">i10-index</div></div>
         </div>
-        <div>
-          <div class="d-label">Authors</div>
-          <div class="d-val" style="font-size:11px"><b>B. Kim</b>, W. Shin, Y. Jung, Y. Park, S. Seo</div>
-        </div>
-        <img class="detail-img" src="https://bumsookim00.com/asset/images/styletransfer.png" alt="">
-        <div>
-          <div class="d-label">Keywords</div>
-          <div class="tag-row-d">
-            <span class="tag-d">Neural Style Transfer</span>
-            <span class="tag-d">AdaIN</span>
-            <span class="tag-d">Color Control</span>
+      </div>
+      <div>
+        <div class="sec-lbl">Research at a Glance</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+          <div style="background:var(--white);border:1px solid var(--border);border-radius:5px;padding:10px 8px;text-align:center;">
+            <div style="font-size:26px;font-weight:bold;color:var(--blue);line-height:1;">11</div>
+            <div style="font-size:9.5px;color:var(--faint);letter-spacing:.07em;margin-top:3px;">Papers</div>
+          </div>
+          <div style="background:var(--white);border:1px solid var(--border);border-radius:5px;padding:10px 8px;text-align:center;">
+            <div style="font-size:26px;font-weight:bold;color:var(--blue);line-height:1;">5</div>
+            <div style="font-size:9.5px;color:var(--faint);letter-spacing:.07em;margin-top:3px;">Yrs Researching</div>
+          </div>
+          <div style="background:var(--white);border:1px solid var(--border);border-radius:5px;padding:10px 8px;text-align:center;">
+            <div style="font-size:26px;font-weight:bold;color:var(--blue);line-height:1;">13</div>
+            <div style="font-size:9.5px;color:var(--faint);letter-spacing:.07em;margin-top:3px;">Collaborators</div>
+          </div>
+          <div style="background:var(--white);border:1px solid var(--border);border-radius:5px;padding:10px 8px;text-align:center;">
+            <div style="font-size:26px;font-weight:bold;color:var(--blue);line-height:1;">4</div>
+            <div style="font-size:9.5px;color:var(--faint);letter-spacing:.07em;margin-top:3px;">Venues (Top-tier)</div>
+          </div>
+          <div style="background:var(--white);border:1px solid var(--border);border-radius:5px;padding:10px 8px;text-align:center;">
+            <div style="font-size:26px;font-weight:bold;color:var(--blue);line-height:1;">4</div>
+            <div style="font-size:9.5px;color:var(--faint);letter-spacing:.07em;margin-top:3px;">Internships</div>
+          </div>
+          <div style="background:var(--white);border:1px solid var(--border);border-radius:5px;padding:10px 8px;text-align:center;">
+            <div style="font-size:26px;font-weight:bold;color:var(--blue);line-height:1;">3</div>
+            <div style="font-size:9.5px;color:var(--faint);letter-spacing:.07em;margin-top:3px;">Orals / Spotlights</div>
           </div>
         </div>
       </div>
-      <div class="detail-right">
-        <div>
-          <div class="d-label">Problem</div>
-          <div class="d-val">Standard AdaIN-based style transfer lacks explicit color control, leading to undesired hue shifts.</div>
+      <div>
+        <div class="sec-lbl">Research Topics</div>
+        <div class="fw">
+          <span class="fc">Diffusion Models</span><span class="fc">3D Gaussian Splatting</span>
+          <span class="fc">Face Re-aging</span><span class="fc">Neural Rendering</span>
+          <span class="fc">Style Transfer</span><span class="fc">Audio-to-3D</span>
+          <span class="fc">VLM / Multimodal</span><span class="fc">Synthetic Data</span>
         </div>
-        <div>
-          <div class="d-label">Method</div>
-          <div class="d-val">Patch-level AdaIN normalization with a color-histogram guidance loss. Separates color and texture channels for independent control.</div>
+      </div>
+      <div>
+        <div class="sec-lbl">Conference Reviews</div>
+        <ul class="rev-list">
+          <li><span class="rev-yr">2026</span>ECCV 2026</li>
+          <li><span class="rev-yr">2025</span>AAAI 2026 · ICLR 2026 · ICASSP 2026</li>
+          <li><span class="rev-yr">2024</span>CVPR 2024 · ICLR 2025 · WACV 2025</li>
+        </ul>
+      </div>
+      <div class="p1-url">bumsookim00.com</div>
+    </div>
+    <!-- right: pubs bar + svg -->
+    <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;">
+      <div class="pubs-bar">
+        <h2>1st-Authored Publications</h2>
+        <span class="hint">— hover to preview · click to expand</span>
+        <div class="legend">
+          <div class="leg-item"><div class="leg-dot" style="background:#E07020"></div><span class="leg-lbl">Image</span></div>
+          <div class="leg-item"><div class="leg-dot" style="background:#2EB060"></div><span class="leg-lbl">Video</span></div>
+          <div class="leg-item"><div class="leg-dot" style="background:#C03070"></div><span class="leg-lbl">3D</span></div>
+          <div class="leg-item"><div class="leg-dot" style="background:#2060C0"></div><span class="leg-lbl">Sound</span></div>
+          <div class="leg-item"><div class="leg-dot" style="background:#5A5A6A"></div><span class="leg-lbl">Language</span></div>
         </div>
-        <div>
-          <div class="d-label">Key Contributions</div>
-          <ul class="contrib-list">
-            <li>Explicit color palette control in neural style transfer</li>
-            <li>Patchified AdaIN preserving local texture fidelity</li>
-            <li>User-specified color extraction from reference images</li>
-          </ul>
-        </div>
+      </div>
+      <div class="svg-wrap" id="svg-wrap">
+        <svg id="pub-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+      </div>
+      <div class="misc-row" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>🎸 Former lead guitarist · fascinated by art, film &amp; music · planning solo interactive art exhibition.</span>
+        <span style="font-style:normal;display:flex;align-items:center;gap:14px;">
+          <span style="font-style:italic;color:var(--faint);">← Press ← to go back</span>
+          <span style="color:var(--faint);">·</span>
+          <span style="font-style:italic;color:var(--faint);">More details →</span>
+          <a href="https://bumsookim00.com" target="_blank" style="color:var(--blue);text-decoration:none;font-style:italic;border-bottom:1px solid #C0D4EC;">bumsookim00.com</a>
+        </span>
       </div>
     </div>
   </div>
-
-  <div class="detail-overlay" id="d-videott">
-    <div class="detail-header">
-      <h3>VideoTimeTravel: High-Fidelity Face Re-Aging Diffusion Models for Production Video</h3>
-      <button class="back-btn" onclick="closeDetail('videott')">← Back</button>
-    </div>
-    <div class="detail-body">
-      <div class="detail-left">
-        <div>
-          <div class="d-label">Venue</div>
-          <div class="d-val"><b>The Visual Computer 2026</b> — IF 2.9</div>
-        </div>
-        <div>
-          <div class="d-label">Authors</div>
-          <div class="d-val" style="font-size:11px"><b>B. Kim</b>, Y. Nam, S. Seo</div>
-        </div>
-        <img class="detail-img" src="https://bumsookim00.com/asset/images/videotimetravel.gif" alt="">
-        <div>
-          <div class="d-label">Keywords</div>
-          <div class="tag-row-d">
-            <span class="tag-d">Face Re-aging</span>
-            <span class="tag-d">Video Diffusion</span>
-            <span class="tag-d">Temporal Consistency</span>
-          </div>
-        </div>
-      </div>
-      <div class="detail-right">
-        <div>
-          <div class="d-label">Problem</div>
-          <div class="d-val">Frame-by-frame re-aging breaks temporal consistency in video — flickering across frames is a core bottleneck for production use.</div>
-        </div>
-        <div>
-          <div class="d-label">Method</div>
-          <div class="d-val">Diffusion-based video re-aging with temporal attention and cross-frame guidance, maintaining identity and age consistency across long sequences.</div>
-        </div>
-        <div>
-          <div class="d-label">Key Contributions</div>
-          <ul class="contrib-list">
-            <li>Temporally-consistent face re-aging at production quality</li>
-            <li>Cross-frame identity preservation mechanism</li>
-            <li>Evaluated on film-grade footage benchmarks</li>
-          </ul>
-        </div>
-        <div>
-          <div class="d-label">Application</div>
-          <div class="d-val">Film post-production, digital de-aging for actors, streaming content.</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="detail-overlay" id="d-makevlm">
-    <div class="detail-header">
-      <h3>Make VLM Recognize Visual Hallucination on Cartoon Character Image with Pose Information</h3>
-      <button class="back-btn" onclick="closeDetail('makevlm')">← Back</button>
-    </div>
-    <div class="detail-body">
-      <div class="detail-left">
-        <div>
-          <div class="d-label">Venue</div>
-          <div class="d-val"><b>WACV 2025</b></div>
-        </div>
-        <div>
-          <div class="d-label">Authors</div>
-          <div class="d-val" style="font-size:11px"><b>B. Kim</b>*, W. Shin*, K. Lee, Y. Jung, S. Seo</div>
-        </div>
-        <img class="detail-img" src="https://bumsookim00.com/asset/images/makevlm.png" alt="">
-        <div>
-          <div class="d-label">Keywords</div>
-          <div class="tag-row-d">
-            <span class="tag-d">VLM</span>
-            <span class="tag-d">Hallucination</span>
-            <span class="tag-d">Cartoon</span>
-            <span class="tag-d">Pose</span>
-          </div>
-        </div>
-      </div>
-      <div class="detail-right">
-        <div>
-          <div class="d-label">Problem</div>
-          <div class="d-val">VLMs frequently hallucinate character identities when posed cartoon images differ from their training distribution.</div>
-        </div>
-        <div>
-          <div class="d-label">Method</div>
-          <div class="d-val">Pose-conditioned visual prompting: inject skeleton pose information as an auxiliary visual signal to ground the VLM's character recognition.</div>
-        </div>
-        <div>
-          <div class="d-label">Key Contributions</div>
-          <ul class="contrib-list">
-            <li>PA-ICVL dataset: pose-augmented cartoon visual language benchmark</li>
-            <li>Pose injection reduces hallucination rate significantly</li>
-            <li>ChatGPT-compatible demo deployed publicly</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="detail-overlay" id="d-vfra">
-    <div class="detail-header">
-      <h3>Video Face Re-Aging: Toward Temporally Consistent Face Re-Aging</h3>
-      <button class="back-btn" onclick="closeDetail('vfra')">← Back</button>
-    </div>
-    <div class="detail-body">
-      <div class="detail-left">
-        <div>
-          <div class="d-label">Venue</div>
-          <div class="d-val"><b>arXiv 2023</b></div>
-        </div>
-        <div>
-          <div class="d-label">Authors</div>
-          <div class="d-val" style="font-size:11px">A. Muqeet*, K. Lee*, <b>B. Kim</b>, Y. Hong, H. Lee, W. Kim, K. Lee</div>
-        </div>
-        <img class="detail-img" src="https://bumsookim00.com/asset/images/vfra.gif" alt="">
-        <div>
-          <div class="d-label">Keywords</div>
-          <div class="tag-row-d">
-            <span class="tag-d">Video Re-aging</span>
-            <span class="tag-d">Temporal</span>
-            <span class="tag-d">Face</span>
-          </div>
-        </div>
-      </div>
-      <div class="detail-right">
-        <div>
-          <div class="d-label">Problem</div>
-          <div class="d-val">Per-frame re-aging ignores video coherence — faces flicker and identity drifts across clips.</div>
-        </div>
-        <div>
-          <div class="d-label">Method</div>
-          <div class="d-val">Optical-flow guided temporal consistency module combined with a GAN-based re-aging backbone. Maintains identity across frames without per-clip finetuning.</div>
-        </div>
-        <div>
-          <div class="d-label">Key Contributions</div>
-          <ul class="contrib-list">
-            <li>Temporal warp loss for frame-to-frame consistency</li>
-            <li>No per-video finetuning required</li>
-            <li>Real-time capable on consumer GPUs</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="detail-overlay" id="d-sounds">
-    <div class="detail-header">
-      <h3>Sounds That Shape: Audio-Driven 3D Mesh Generation with Attribute-Decoupled SDS</h3>
-      <button class="back-btn" onclick="closeDetail('sounds')">← Back</button>
-    </div>
-    <div class="detail-body">
-      <div class="detail-left">
-        <div>
-          <div class="d-label">Venue</div>
-          <div class="d-val"><b>ICASSP 2026</b></div>
-        </div>
-        <div>
-          <div class="d-label">Authors</div>
-          <div class="d-val" style="font-size:11px"><b>B. Kim</b>, S. Seo</div>
-        </div>
-        <img class="detail-img" src="https://bumsookim00.com/asset/images/soundsthatshape.gif" alt="">
-        <div>
-          <div class="d-label">Keywords</div>
-          <div class="tag-row-d">
-            <span class="tag-d">Audio-to-3D</span>
-            <span class="tag-d">SDS</span>
-            <span class="tag-d">Mesh Generation</span>
-            <span class="tag-d">Multimodal</span>
-          </div>
-        </div>
-      </div>
-      <div class="detail-right">
-        <div>
-          <div class="d-label">Problem</div>
-          <div class="d-val">Generating 3D geometry from audio cues is underexplored — most 3D generation relies on text or image prompts alone.</div>
-        </div>
-        <div>
-          <div class="d-label">Method</div>
-          <div class="d-val">Attribute-decoupled Score Distillation Sampling (SDS): separates material and geometry guidance signals, conditioning shape generation on audio embeddings from a pretrained audio encoder.</div>
-        </div>
-        <div>
-          <div class="d-label">Key Contributions</div>
-          <ul class="contrib-list">
-            <li>First audio-driven 3D mesh generation pipeline</li>
-            <li>Attribute-decoupled SDS: separates shape vs. material</li>
-            <li>Audio → geometry correspondence without paired data</li>
-          </ul>
-        </div>
-        <div>
-          <div class="d-label">Application</div>
-          <div class="d-val">Procedural audio-visual game assets, immersive XR environments, creative tools.</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="detail-overlay" id="d-taming">
-    <div class="detail-header">
-      <h3>Taming Gaussian Densification in Score Distillation Sampling for High-Fidelity Text-to-3D</h3>
-      <button class="back-btn" onclick="closeDetail('taming')">← Back</button>
-    </div>
-    <div class="detail-body">
-      <div class="detail-left">
-        <div>
-          <div class="d-label">Venue</div>
-          <div class="d-val"><b>CGI 2026</b> — Under Review</div>
-        </div>
-        <div>
-          <div class="d-label">Authors</div>
-          <div class="d-val" style="font-size:11px"><b>B. Kim</b>, J. Ryu, S. Seo</div>
-        </div>
-        <img class="detail-img" src="https://bumsookim00.com/asset/images/taminggaussian.png" alt="">
-        <div>
-          <div class="d-label">Keywords</div>
-          <div class="tag-row-d">
-            <span class="tag-d">3DGS</span>
-            <span class="tag-d">SDS</span>
-            <span class="tag-d">Text-to-3D</span>
-            <span class="tag-d">Densification</span>
-          </div>
-        </div>
-      </div>
-      <div class="detail-right">
-        <div>
-          <div class="d-label">Problem</div>
-          <div class="d-val">3D Gaussian Splatting combined with SDS suffers from uncontrolled Gaussian densification — leading to floaters, artifacts, and geometry collapse.</div>
-        </div>
-        <div>
-          <div class="d-label">Method</div>
-          <div class="d-val">Adaptive densification controller that monitors SDS gradient statistics and prunes/splits Gaussians based on geometric confidence scores during optimization.</div>
-        </div>
-        <div>
-          <div class="d-label">Key Contributions</div>
-          <ul class="contrib-list">
-            <li>Principled densification schedule guided by SDS signal quality</li>
-            <li>Significant reduction in floaters and surface artifacts</li>
-            <li>Compatible with existing text-to-3D SDS pipelines</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="detail-overlay" id="d-flood">
-    <div class="detail-header">
-      <h3>MultiFloodSynth: Multi-Annotated Flood Synthetic Dataset Generation</h3>
-      <button class="back-btn" onclick="closeDetail('flood')">← Back</button>
-    </div>
-    <div class="detail-body">
-      <div class="detail-left">
-        <div>
-          <div class="d-label">Venue</div>
-          <div class="d-val"><b>AAAI GoodData Workshop 2025</b> — Oral</div>
-        </div>
-        <div>
-          <div class="d-label">Authors</div>
-          <div class="d-val" style="font-size:11px">Y. Kang*, Y. Jung*, W. Shin*, <b>B. Kim</b>*, S. Seo</div>
-        </div>
-        <img class="detail-img" src="https://bumsookim00.com/asset/images/multifloodsynth.gif" alt="">
-        <div>
-          <div class="d-label">Keywords</div>
-          <div class="tag-row-d">
-            <span class="tag-d">Synthetic Data</span>
-            <span class="tag-d">Flood</span>
-            <span class="tag-d">Segmentation</span>
-            <span class="tag-d">Detection</span>
-          </div>
-        </div>
-      </div>
-      <div class="detail-right">
-        <div>
-          <div class="d-label">Problem</div>
-          <div class="d-val">Real flood imagery is scarce and lacks multi-task annotations (segmentation + depth + detection). Data collection during disasters is dangerous and costly.</div>
-        </div>
-        <div>
-          <div class="d-label">Method</div>
-          <div class="d-val">Generative pipeline combining diffusion-based image synthesis with automated multi-label annotation: segmentation masks, depth maps, and bounding boxes generated jointly.</div>
-        </div>
-        <div>
-          <div class="d-label">Key Contributions</div>
-          <ul class="contrib-list">
-            <li>Large-scale synthetic flood dataset with 4 annotation types</li>
-            <li>Fully automated annotation pipeline — no manual labeling</li>
-            <li>Bridges sim-to-real gap for disaster response AI</li>
-          </ul>
-        </div>
-        <div>
-          <div class="d-label">Application</div>
-          <div class="d-val">Disaster response, flood monitoring, emergency AI systems.</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-</div><!-- /slide 1 -->
-
-</div><!-- /deck -->
-
-<!-- ── CONTROLS ── -->
-<div class="controls">
-  <button class="btn" id="prev" onclick="go(-1)" disabled>← Prev</button>
-  <div class="prog"><div class="prog-fill" id="prog" style="width:100%"></div></div>
-  <span class="ctr" id="ctr">1 / 1</span>
-  <button class="btn" id="next" onclick="go(1)" disabled>Next →</button>
 </div>
-<div class="thumbs">
-  <div class="th active" onclick="goTo(1)">Overview</div>
+
+<!-- MINI CARD -->
+<div class="hcard" id="hcard">
+  <div class="hc-bar" id="hc-bar"></div>
+  <div class="hc-hdr"><div class="hc-venue" id="hc-venue"></div><div class="hc-tsm" id="hc-tsm"></div></div>
+  <div class="hc-preview">
+    <div class="hc-img-w"><img id="hc-img" src="" alt=""></div>
+    <div class="hc-snip" id="hc-snip"></div>
+  </div>
+  <div class="hc-footer"><span class="hc-auth" id="hc-auth"></span><span class="hc-hint">Click to expand →</span></div>
 </div>
+
+<!-- MODAL -->
+<div class="moverlay" id="moverlay" onclick="closeMifBg(event)">
+  <div class="modal">
+    <div class="m-hdr">
+      <div class="m-cbar" id="m-cbar"></div>
+      <div class="m-hdr-txt">
+        <div class="m-venue" id="m-venue"></div>
+        <div class="m-title" id="m-title"></div>
+        <div class="m-badges" id="m-badges"></div>
+        <div class="m-links" id="m-links"></div>
+      </div>
+      <button class="m-close" onclick="closeM()">✕</button>
+    </div>
+    <div class="m-body">
+      <div class="m-left">
+        <div class="m-teaser-wrap">
+          <span class="m-slot-lbl">Teaser</span>
+          <img id="m-teaser" src="" alt="">
+          <div class="m-upzone">
+            <label class="m-uplbl" for="m-upload">+ Upload</label>
+            <input class="m-upinput" type="file" id="m-upload" accept="image/*">
+          </div>
+        </div>
+        <div class="m-meta">
+          <div class="m-lbl">Authors</div>
+          <div class="m-authors" id="m-authors"></div>
+          <div id="m-cross-sec" style="display:none;margin-top:7px">
+            <div class="m-lbl">Also crosses</div>
+            <div class="m-cross-row" id="m-cross"></div>
+          </div>
+        </div>
+      </div>
+      <div class="m-text">
+        <div><div class="m-lbl">Abstract</div><div class="m-abstract" id="m-abstract"></div></div>
+        <div><div class="m-lbl">Key Contributions</div><ul class="m-cl" id="m-contribs"></ul></div>
+        <div><div class="m-lbl">Keywords</div><div class="m-tags" id="m-tags"></div></div>
+        <div id="m-result-sec">
+          <div class="m-lbl">Main Result</div>
+          <div class="m-rimg-wrap" id="m-result-wrap">
+            <img id="m-result" src="" alt="" style="display:none">
+            <video id="m-result-video" controls loop muted playsinline
+              style="display:none;width:100%;max-height:260px;object-fit:contain;background:#000"></video>
+          </div>
+          <div class="m-upload-row">
+            <label class="m-uplbl2" for="m-upload2">+ Upload result image</label>
+            <input class="m-upinput" type="file" id="m-upload2" accept="image/*,video/*">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="pdots" id="global-pdots"><button class="pdot on" id="dot1" onclick="goPage(1)"></button><button class="pdot" id="dot2" onclick="goPage(2)"></button></div>
+<div class="phint" id="phint-el">← → to navigate</div>
 
 <script>
-let cur = 1, total = 1;
+/* ═══════════════════════════════════════
+   PAGE 1 — HORIZONTAL TIMELINE
+═══════════════════════════════════════ */
 
-function goTo(n) {
-  document.getElementById('s'+cur).classList.remove('active');
-  document.querySelectorAll('.th')[cur-1].classList.remove('active');
-  cur = Math.max(1, Math.min(total, n));
-  document.getElementById('s'+cur).classList.add('active');
-  document.querySelectorAll('.th')[cur-1].classList.add('active');
-  document.getElementById('ctr').textContent = cur + ' / ' + total;
-  document.getElementById('prev').disabled = cur === 1;
-  document.getElementById('next').disabled = cur === total;
-  document.getElementById('prog').style.width = (cur/total*100)+'%';
+var YEAR_S=2021, YEAR_E=2027;
+var YEARS=[2021,2023,2024,2025,2026];
+
+/* Compute x% from year */
+function pct(yr){ return (yr-YEAR_S)/(YEAR_E-YEAR_S)*100; }
+
+/* Build axis year marks */
+function buildAxis(){
+  var bar=document.getElementById('tl-year-marks');
+  bar.innerHTML='';
+  YEARS.forEach(function(yr){
+    var div=document.createElement('div');
+    div.className='tl-yr-mark';
+    div.style.left=pct(yr)+'%';
+    div.innerHTML='<div class="tl-yr-tick"></div><div class="tl-yr-label">'+yr+'</div>';
+    bar.appendChild(div);
+  });
 }
-function go(d) { goTo(cur+d); }
-document.addEventListener('keydown', e => {
-  if (e.key==='ArrowRight'||e.key==='ArrowDown') go(1);
-  if (e.key==='ArrowLeft'||e.key==='ArrowUp')   go(-1);
-  if (e.key==='Escape') {
-    document.querySelectorAll('.detail-overlay.open').forEach(el => el.classList.remove('open'));
+
+/* Education items — years adjusted to minimise gaps */
+var EDU=[
+  {year:2023.2,endYear:2025.0,title:'M.S. — Applied Art & Technology',
+   org:'Chung-Ang University',logo:null,color:'var(--edu-c)',
+   desc:'Advisor: Prof. Sanghyun Seo',
+   thesis:{img:'ms_thesis_main_result.png',text:'Learning Pose-to-Semantic for 3D Anamorphic Art based on 2D Diffusion Guidance'}},
+  {year:2021,endYear:2023.1,title:'B.S. — Art & Technology / EE',
+   org:'Chung-Ang University',logo:null,color:'var(--edu-c)',
+   desc:'Exhibition: Dynamic Projection Mapping',
+   artworks:['https://bumsookim00.com/asset/images/bsgrad_01.jpg',
+             'https://bumsookim00.com/asset/images/bsgrad_02.jpg',
+             'https://bumsookim00.com/asset/images/st1.jpg',
+             'https://bumsookim00.com/asset/images/st2.jpg',
+             'https://bumsookim00.com/asset/images/st3.jpg',
+             'https://bumsookim00.com/asset/images/st4.jpg']}
+];
+
+/* Industry items — ETRI and VIVE years adjusted to be continuous */
+var IND=[
+  {year:2025.7,endYear:2026.5,title:'Vision AI Research Intern',
+   org:'Smilegate AI',logo:'https://www.smilegate.com/assets/img/company/about/logo_smilegate_en.png',
+   color:'var(--ind-c)',desc:'Generative AI for game content & Vision AI R&D.'},
+  {year:2024.3,endYear:2025.6,title:'Research Intern',
+   org:'Boeing R&T',logo:'boeing_logo.png',
+   color:'var(--ind-c)',desc:'ML for manufacturing anomaly detection.'},
+  {year:2022.9,endYear:2024.2,title:'Research Intern',
+   org:'VIVE STUDIOS',logo:'vive_logo.png',
+   color:'var(--ind-c)',desc:'Face re-aging & FilmAI. ToonAging @ CVPR:W\'24.'},
+  {year:2021,endYear:2022.8,title:'Research Intern',
+   org:'ETRI',logo:'etri_logo.png',
+   color:'var(--ind-c)',desc:'SafeAI: object detection & tracking.'}
+];
+
+function makeCard(item,itype){
+  var card=document.createElement('div');
+  card.className='tl-h-card';
+  var left=pct(item.year);
+  var w=Math.max(pct(item.endYear)-left,13);
+  card.style.left=left+'%';
+  card.style.width=w+'%';
+
+  var badge=document.createElement('span');
+  badge.className='tl-h-badge '+(itype==='edu'?'be':'bw');
+  badge.textContent=itype==='edu'?'Education':'Industry';
+  card.appendChild(badge);
+
+  var title=document.createElement('div');
+  title.className='tl-h-title';
+  title.textContent=item.title;
+  card.appendChild(title);
+
+  var orgRow=document.createElement('div');
+  orgRow.className='tl-h-org';
+  if(item.logo){
+    var lg=document.createElement('img');
+    lg.className='tl-h-logo';lg.src=item.logo;lg.alt=item.org;
+    orgRow.appendChild(lg);
+  }
+  var orgSpan=document.createElement('span');
+  orgSpan.className='tl-h-orgname';orgSpan.textContent=item.org;
+  orgRow.appendChild(orgSpan);
+  card.appendChild(orgRow);
+
+  var desc=document.createElement('div');
+  desc.className='tl-h-desc';desc.textContent=item.desc;
+  card.appendChild(desc);
+
+  if(item.thesis){
+    var tm=document.createElement('div');
+    tm.className='thesis-mini';
+    tm.innerHTML='<img class="thesis-mini-img" src="'+item.thesis.img+'" alt=""><div class="thesis-mini-t">'+item.thesis.text+'</div>';
+    card.appendChild(tm);
+  }
+  if(item.artworks){
+    var ar=document.createElement('div');
+    ar.className='art-grid-2x3';
+    item.artworks.forEach(function(src){
+      var img=document.createElement('img');
+      img.className='art-th2';img.src=src;img.alt='';
+      ar.appendChild(img);
+    });
+    card.appendChild(ar);
+  }
+
+  /* dot: edu→bottom, ind→top, anchored to axis */
+  var dot=document.createElement('div');
+  dot.className='tl-h-dot';
+  dot.style.borderColor=itype==='edu'?'var(--edu-c)':'var(--ind-c)';
+  card.appendChild(dot);
+
+  return card;
+}
+
+function buildHTimeline(){
+  buildAxis();
+  var eduItems=document.getElementById('edu-items');
+  var indItems=document.getElementById('ind-items');
+  eduItems.innerHTML=''; indItems.innerHTML='';
+  EDU.forEach(function(e){ eduItems.appendChild(makeCard(e,'edu')); });
+  IND.forEach(function(e){ indItems.appendChild(makeCard(e,'ind')); });
+}
+
+/* Industry reveal */
+var tlShown=false;
+var indRow=document.getElementById('ind-row');
+var tlHint=document.getElementById('tl-nav-hint');
+
+function revealIndustry(){
+  if(tlShown)return;
+  tlShown=true;
+  indRow.classList.remove('hidden');
+  tlHint.classList.add('hidden');
+}
+function hideIndustry(){
+  if(!tlShown)return;
+  tlShown=false;
+  indRow.classList.add('hidden');
+  tlHint.classList.remove('hidden');
+}
+
+/* ═══════════════════════════════════════
+   PAGE 2 — SUBWAY MAP
+═══════════════════════════════════════ */
+var C={image:'#E07020',video:'#2EB060','3d':'#C03070',sound:'#2060C0',lang:'#5A5A6A'};
+var LN={image:'Image',video:'Video','3d':'3D',sound:'Sound',lang:'Language'};
+var LINES=['image','video','3d','sound','lang'];
+var LINE_START={image:2023,video:2023,'3d':2024.8,sound:2025.9,lang:2024.8};
+
+var papers=[
+{key:'minecraftify',title:'Minecraft-ify',
+ fullTitle:'Minecraft-ify: Minecraft Style Image Generation with Text-guided Image Editing',
+ venue:"NeurIPS:W'23 · Oral 8.7%",year:2023.12,primary:'image',crosses:['lang'],
+ badges:[{t:"NeurIPS:W",s:'neurips'},{t:'Oral 8.7%',s:'oral'}],
+ img:'https://bumsookim00.com/asset/images/minecraftify.png',
+ resultImg:'https://gh-bumsookim.github.io/Minecraft-ify/static/images/result.jpg',
+ projectUrl:'https://gh-bumsookim.github.io/Minecraft-ify/',
+ authors:'<b>B. Kim</b>, S. Byun, Y. Jung, W. Shin, S. Amin, S. Seo',
+ abstract:'First text-driven in-game texture generation for Minecraft. Generates face-focused images for cube-manifold 3D characters via StyleGAN+StyleCLIP.',
+ contribs:['First text-driven Minecraft character texture generation','StyleGAN+StyleCLIP for cube-manifold 3D geometry','Supports image inversion and text-guided manipulation'],
+ tags:['StyleGAN','StyleCLIP','In-game AI','Texture']},
+{key:'vfra',title:'Video Face\nRe-Aging',
+ fullTitle:'Video Face Re-Aging: Toward Temporally Consistent Face Re-Aging',
+ venue:'arXiv 2023',year:2023.48,primary:'video',crosses:[],
+ badges:[{t:'arXiv',s:'gray'}],
+ img:'https://bumsookim00.com/asset/images/vfra.gif',
+ resultImg:'video_face_main_result.mp4',isVideo:true,
+ projectUrl:'https://video-reaging.github.io/',
+ authors:'A. Muqeet*, K. Lee*, <b>B. Kim</b>, Y. Hong, H. Lee, W. Kim, K. Lee',
+ abstract:'GAN-based video face re-aging with optical-flow-guided temporal consistency. Maintains identity across frames without per-clip finetuning.',
+ contribs:['Optical-flow temporal warp loss for frame consistency','No per-video finetuning required','Real-time on consumer GPUs'],
+ tags:['GAN','Temporal Consistency','Face Re-aging','Optical Flow']},
+{key:'toonaging',title:'ToonAging',
+ fullTitle:'ToonAging: Face Re-Aging upon Artistic Portrait Style Transfer',
+ venue:"CVPR:W'24",year:2024.22,primary:'image',crosses:['video'],
+ badges:[{t:"CVPR:W",s:'cvpr'}],
+ img:'https://bumsookim00.com/asset/images/toonaging.gif',
+ resultImg:'https://bumsookim00.com/ToonAging/static/images/ToonAging_teasor.jpg',
+ projectUrl:'https://gh-bumsookim.github.io/ToonAging/',
+ authors:'<b>B. Kim</b>, A. Muqeet, K. Lee, S. Seo',
+ abstract:'One-stage method fusing face re-aging and portrait style transfer. Disentangled latent fusion outperforms two-stage baselines.',
+ contribs:['First one-stage face re-aging + portrait style transfer','Disentangled latent fusion for aging and NPR appearance','Outperforms two-stage baselines across styles'],
+ tags:['Face Re-aging','Style Transfer','StyleGAN','NPR']},
+{key:'style',title:'AdaIN\nStyle Transfer',
+ fullTitle:'Explicitly Color-Inspired Neural Style Transfer Using Patchified AdaIN',
+ venue:'CMES 2024 · Q2 · IF 1.7',year:2024.74,primary:'image',crosses:[],
+ badges:[{t:'IF 1.7',s:'green'},{t:'SCIE',s:'green'}],
+ img:'https://bumsookim00.com/asset/images/styletransfer.png',
+ resultImg:null,projectUrl:null,
+ authors:'<b>B. Kim</b>, W. Shin, Y. Jung, Y. Park, S. Seo',
+ abstract:'Patch-level AdaIN with color-histogram guidance. Separates color and texture for explicit palette manipulation.',
+ contribs:['Patch-level AdaIN preserving local texture','Color-histogram guidance for palette control','Decoupled color and texture channels'],
+ tags:['Neural Style Transfer','AdaIN','Color Control','Patch']},
+{key:'makevlm',title:'Cartoon\nHallucination',
+ fullTitle:'Make VLM Recognize Visual Hallucination on Cartoon Character Image with Pose Information',
+ venue:'WACV 2025',year:2025.02,primary:'lang',crosses:['image'],
+ badges:[{t:'WACV',s:'wacv'}],
+ img:'https://bumsookim00.com/asset/images/makevlm.png',
+ resultImg:'https://bumsookim00.com/Cartoon-Hallucinations-Detection/static/images/pipeline.png',
+ projectUrl:'https://gh-bumsookim.github.io/Cartoon-Hallucinations-Detection/',
+ authors:'<b>B. Kim</b>*, W. Shin*, K. Lee, Y. Jung, S. Seo',
+ abstract:'PA-ICVL: pose-aware in-context visual learning improves VLM hallucination detection on cartoon characters (+28% GPT-4V, +23% Gemini).',
+ contribs:['PA-ICVL: first pose-aware in-context visual learning','Cartoon-hallucination benchmark with pose annotations','+28%/+23% detection improvement'],
+ tags:['VLM','Hallucination','Pose','PA-ICVL','Cartoon']},
+{key:'flood',title:'MultiFlood\nSynth',
+ fullTitle:'MultiFloodSynth: Multi-Annotated Flood Synthetic Dataset Generation',
+ venue:"AAAI:W'25 · Oral",year:2025.28,primary:'3d',crosses:['image'],
+ badges:[{t:"AAAI:W",s:'aaai'},{t:'Oral',s:'oral'}],
+ img:'https://bumsookim00.com/asset/images/multifloodsynth.gif',
+ resultImg:'multiflood_main_result.png',
+ projectUrl:'https://arxiv.org/abs/2502.03966',
+ authors:'Y. Kang*, Y. Jung*, W. Shin*, <b>B. Kim</b>*, S. Seo',
+ abstract:'Diffusion-based synthetic flood dataset with automated multi-label annotation. Zero manual labeling.',
+ contribs:['Synthetic flood dataset with 4 annotation types','Fully automated — zero manual labeling','Bridges sim-to-real gap for disaster AI'],
+ tags:['Synthetic Data','Diffusion','Segmentation','Disaster AI']},
+{key:'videott',title:'VideoTime\nTravel',
+ fullTitle:'VideoTimeTravel: High-Fidelity Face Re-Aging Diffusion Models for Production Video',
+ venue:'Visual Computer 2026 · IF 2.9',year:2025.70,primary:'video',crosses:['image'],
+ badges:[{t:'IF 2.9',s:'green'},{t:'SCIE',s:'green'}],
+ img:'https://bumsookim00.com/asset/images/videotimetravel.gif',
+ resultImg:'https://gh-bumsookim.github.io/VideoTimeTravel/static/images/fig_graphical_abstract.png',
+ projectUrl:'https://gh-bumsookim.github.io/VideoTimeTravel/',
+ authors:'<b>B. Kim</b>, Y. Nam, S. Seo',
+ abstract:'First diffusion-based video face re-aging. Null-text optimization + delta maps + optical flow propagation.',
+ contribs:['First diffusion-based video face re-aging','Joint null-text optimization for coherence','Delta map + optical-flow temporal consistency'],
+ tags:['Video Diffusion','Face Re-aging','Null-text','Optical Flow']},
+{key:'sounds',title:'Sounds That\nShape',
+ fullTitle:'Sounds That Shape: Audio-Driven 3D Mesh Generation with Attribute-Decoupled SDS',
+ venue:'ICASSP 2026',year:2026.05,primary:'sound',crosses:['3d'],
+ badges:[{t:'ICASSP',s:'icassp'}],
+ img:'https://bumsookim00.com/asset/images/soundsthatshape.gif',
+ resultImg:'soundthatshape_main_result.png',
+ projectUrl:'https://bumsookim00.com/SoundsThatShape/',
+ authors:'<b>B. Kim</b>, S. Seo',
+ abstract:'First audio-driven 3D mesh generation. Attribute-decoupled SDS separates geometry and material guidance from audio embeddings.',
+ contribs:['First audio-driven 3D mesh generation','Attribute-decoupled SDS: geometry vs. material','No paired training data required'],
+ tags:['Audio-to-3D','SDS','3DGS','Multimodal']},
+{key:'thesis',title:'3D Anamorphic\nArt',
+ fullTitle:'Learning Pose-to-Semantic for 3D Anamorphic Art based on 2D Diffusion Guidance',
+ venue:'MS Thesis · CAU 2026 · SIGGRAPH Poster Submitted',year:2026.42,primary:'3d',crosses:['image'],
+ badges:[{t:'MS Thesis',s:'gray'},{t:'SIGGRAPH Poster',s:'siggraph'},{t:'Submitted',s:'submitted'}],
+ img:'https://bumsookim00.com/asset/images/msthesis.png',
+ resultImg:'ms_thesis_main_result.png',
+ projectUrl:'https://dcollection.cau.ac.kr/public_resource/pdf/000000247709_20260403133105.pdf',
+ authors:'<b>B. Kim</b>',
+ abstract:'3D anamorphic artworks revealed from a specific viewpoint via pose-to-semantic mappings with 2D diffusion priors.',
+ contribs:['Pose-to-semantic framework','2D diffusion guidance for viewpoint-constrained synthesis','Text-driven shadow-art creation'],
+ tags:['Anamorphic','3D Gen.','Diffusion Guidance','Pose']},
+{key:'neural',title:'Neural Creative\nInterpolation',
+ fullTitle:'How Generative Models Serve as Visual Artists for Creative Interpolation',
+ venue:"CVPR:W'26 (Rejected)",year:2026.46,primary:'image',crosses:[],
+ badges:[{t:"CVPR:W",s:'cvpr'},{t:'Rejected',s:'reject'}],
+ img:'https://bumsookim00.com/asset/images/creativeinterpolation.png',
+ resultImg:'neural_interpolation_main_result.png',
+ projectUrl:null,
+ authors:'<b>B. Kim</b>, Y. Kang, S. Seo',
+ abstract:'Framework for controllable style interpolation as creative AI. Semantically meaningful transitions using diffusion latent spaces.',
+ contribs:['Controllable style interpolation framework','Latent interpolation dynamics analysis','Semantically meaningful artistic transitions'],
+ tags:['Generative','Style Interpolation','Creative AI','Diffusion']},
+{key:'inverse',title:'Inverse Sound\nRendering',
+ fullTitle:'Inverse Sound Rendering (On-going)',
+ venue:'On-going Research 2026',year:2026.88,primary:'sound',crosses:['3d'],
+ badges:[{t:'On-going',s:'ongoing'}],
+ img:'inverse_sound_main_result.png',resultImg:'inverse_sound_main_result.png',
+ projectUrl:null,
+ authors:'<b>B. Kim</b>, S. Seo',
+ abstract:'Inferring scene geometry and material from acoustic observations using differentiable acoustic rendering and generative models.',
+ contribs:['Differentiable acoustic rendering pipeline','Inverse inference of geometry and material','Bridges audio and 3D scene understanding'],
+ tags:['Inverse Rendering','Sound','Differentiable','3D']}
+];
+
+function bStyle(s){
+  /* Unified badge color system:
+     Top-tier (all venues)  → same dark navy, white text
+     Oral / highlight       → same amber, dark text
+     Journal / metric       → muted gray-green, dark text (understated)
+     Reject                 → muted rose, dark text (understated)
+     Submitted / on-going   → muted warm, dark text
+     Neutral (arXiv, thesis)→ light gray */
+  var TOP  ={bg:'#DBEAFE',tx:'#1E3A8A',br:'#93C5FD'};  /* light blue bg, deep navy text — all top-tier */
+  var ORAL ={bg:'#FEF3C7',tx:'#92400E',br:'#FCD34D'};  /* pale amber bg, dark amber text — oral */
+  var JNL  ={bg:'#E5E7EB',tx:'#374151',br:'#9CA3AF'};  /* muted gray — journal, IF, Q2 */
+  var REJ  ={bg:'#FCE8E8',tx:'#991B1B',br:'#FECACA'};  /* soft rose — reject */
+  var SUB  ={bg:'#EDE9FE',tx:'#4C1D95',br:'#C4B5FD'};  /* pale violet — submitted */
+  var ONG  ={bg:'#FFF7ED',tx:'#C2410C',br:'#FED7AA'};  /* pale orange — on-going */
+  var GRAY ={bg:'#F3F4F6',tx:'#6B7280',br:'#D1D5DB'};  /* gray — neutral */
+  var m={
+    cvpr:TOP, neurips:TOP, aaai:TOP, wacv:TOP, icassp:TOP, siggraph:TOP,
+    oral:ORAL, spotlight:ORAL,
+    green:JNL,
+    reject:REJ,
+    submitted:SUB,
+    ongoing:ONG,
+    gray:GRAY
+  };
+  return m[s]||m.gray;
+}
+
+var YEAR_START=2022.9, YEAR_END=2027.15;
+var LINE_START_MAP={image:2023,video:2023,'3d':2024.8,sound:2025.9,lang:2024.8};
+
+function buildSVG(){
+  var wrap=document.getElementById('svg-wrap');
+  var W=wrap.clientWidth, H=wrap.clientHeight;
+  var svg=document.getElementById('pub-svg');
+  svg.innerHTML='';
+  document.querySelectorAll('.stn-hit').forEach(function(e){e.remove();});
+
+  var PL=82, PR=34;
+  var dW=W-PL-PR, nL=LINES.length;
+  /* Pack lines with generous spacing so thumbnails can be large.
+     We want ~150px between line centres — leaves plenty for badge above + title below + big image. */
+  var MARGIN_V=54;
+  var MAX_SPACING=96;
+  var BAND_H=Math.min((nL-1)*MAX_SPACING, H-MARGIN_V*2);
+  var BAND_TOP=(H-BAND_H)/2;
+  var spacing=BAND_H/(nL-1);
+
+  var lineY={};
+  LINES.forEach(function(l,i){lineY[l]=BAND_TOP+i*spacing;});
+  function xOf(yr){return PL+dW*(yr-YEAR_START)/(YEAR_END-YEAR_START);}
+
+  /* Thumbnail: badge(22)+gap(8) above, title(36)+gap(8) below = 74px overhead.
+     Give the rest to the image. Hard cap at 120px height. */
+  var LH=15, BH=20, GAP=6;
+  /* Large TH — thesis is between ICASSP and On-going on separate 3d line, no overlap */
+  var TH=Math.min(155, Math.max(80, Math.floor(spacing*0.76)));
+  var TW=Math.floor(TH*(4/3));
+
+  var defs=mk('defs',{});svg.appendChild(defs);
+
+  /* year grid — always fully opaque */
+  var PT=BAND_TOP, PB=H-BAND_TOP-BAND_H;
+  for(var yr=2023;yr<=2027;yr++){
+    var gx=xOf(yr);
+    svg.appendChild(mk('line',{x1:gx,x2:gx,y1:92,y2:PT+BAND_H+10,stroke:'#CCCAC6','stroke-width':'1','stroke-dasharray':'5,5'}));
+    var yt=mk('text',{x:gx,y:85,'text-anchor':'middle','font-family':'Georgia,serif','font-size':'15','font-weight':'bold','fill':'#888'});
+    yt.textContent=yr;svg.appendChild(yt);
+  }
+
+  /* subway lines — animated */
+  LINES.forEach(function(l,li){
+    var y=lineY[l];
+    var xS=xOf(Math.max(YEAR_START,LINE_START_MAP[l]||YEAR_START));
+    var lineEl=mk('line',{x1:xS,x2:xOf(YEAR_END),y1:y,y2:y,stroke:C[l],'stroke-width':'11','stroke-linecap':'round','opacity':'0'});
+    lineEl.style.animation='svgFadeIn 0.5s ease forwards';
+    lineEl.style.animationDelay=(li*0.08)+'s';
+    svg.appendChild(lineEl);
+    var lt=mk('text',{x:PL+8,y:y+6,'text-anchor':'end','font-family':'Georgia,serif','font-size':'16','font-weight':'bold','fill':C[l],'opacity':'0'});
+    lt.textContent=LN[l];
+    lt.style.animation='svgFadeIn 0.5s ease forwards';
+    lt.style.animationDelay=(li*0.08)+'s';
+    svg.appendChild(lt);
+  });
+
+  /* group papers by line, sort by year for nudge */
+  var byLine={};
+  LINES.forEach(function(l){byLine[l]=[];});
+  papers.forEach(function(p){byLine[p.primary].push(p);});
+  LINES.forEach(function(l){byLine[l].sort(function(a,b){return a.year-b.year;});});
+
+  /* nudge: MIN_GAP = TW + 24 */
+  var MIN_GAP=TW+24;
+  var labelX={};
+  papers.forEach(function(p){labelX[p.key]=xOf(p.year);});
+  LINES.forEach(function(l){
+    var sorted=byLine[l].slice().sort(function(a,b){return a.year-b.year;});
+    for(var pass=0;pass<6;pass++){
+      for(var i=1;i<sorted.length;i++){
+        var prev=sorted[i-1],cur=sorted[i];
+        var gap=labelX[cur.key]-labelX[prev.key];
+        if(gap<MIN_GAP){
+          var shift=(MIN_GAP-gap)/2+1;
+          labelX[prev.key]-=shift;
+          labelX[cur.key]+=shift;
+        }
+      }
+    }
+    sorted.forEach(function(p){
+      labelX[p.key]=Math.max(PL+TW/2+2,Math.min(W-PR-TW/2-2,labelX[p.key]));
+    });
+  });
+
+  /* draw stations — each wrapped in animated g group */
+  /* Sort all papers by year for staggered reveal order */
+  var sortedPapers=papers.slice().sort(function(a,b){return a.year-b.year;});
+  papers.forEach(function(p){
+    p._animIdx=sortedPapers.indexOf(p);
+  });
+
+  papers.forEach(function(p){
+    var cx=xOf(p.year);
+    var lx=labelX[p.key];
+    var y=lineY[p.primary],color=C[p.primary];
+    var rx=cx-TW/2,ry=y-TH/2;
+    var isOn=(p.key==='inverse');
+    var delay=(0.35+p._animIdx*0.07)+'s';
+
+    /* wrap everything for this station in an animated group */
+    var g=mk('g',{opacity:'0'});
+    g.style.animation='svgFadeSlideIn 0.45s ease forwards';
+    g.style.animationDelay=delay;
+    svg.appendChild(g);
+
+    function addTo(el){ g.appendChild(el); return el; }
+
+    /* thumbnail */
+    if(p.img){
+      var cid='cl-'+p.key;
+      var cp=mk('clipPath',{'id':cid});
+      cp.appendChild(mk('rect',{x:rx,y:ry,width:TW,height:TH,rx:'4'}));
+      defs.appendChild(cp);
+      addTo(mk('rect',{x:rx+1.5,y:ry+3,width:TW,height:TH,rx:'4',fill:'rgba(0,0,0,.11)'}));
+      addTo(mk('rect',{x:rx,y:ry,width:TW,height:TH,rx:'4',fill:'#F0EEEA',stroke:color,'stroke-width':'3','stroke-dasharray':isOn?'7,4':'none'}));
+      var img=document.createElementNS('http://www.w3.org/2000/svg','image');
+      img.setAttribute('x',rx);img.setAttribute('y',ry);
+      img.setAttribute('width',TW);img.setAttribute('height',TH);
+      img.setAttribute('clip-path','url(#'+cid+')');
+      img.setAttribute('preserveAspectRatio','xMidYMid meet');
+      img.setAttributeNS('http://www.w3.org/1999/xlink','href',p.img);
+      addTo(img);
+      addTo(mk('rect',{x:rx,y:ry,width:TW,height:TH,rx:'4',fill:'none',stroke:color,'stroke-width':'3','stroke-dasharray':isOn?'7,4':'none'}));
+    } else {
+      addTo(mk('rect',{x:rx+1.5,y:ry+3,width:TW,height:TH,rx:'4',fill:'rgba(0,0,0,.09)'}));
+      addTo(mk('rect',{x:rx,y:ry,width:TW,height:TH,rx:'4',fill:'#F5F3EF',stroke:color,'stroke-width':'3'}));
+      var ph=mk('text',{x:cx,y:y+9,'text-anchor':'middle','font-family':'Georgia,serif','font-size':'22','fill':color,'opacity':'.4'});
+      ph.textContent='?';addTo(ph);
+    }
+
+    /* nudge connector */
+    if(Math.abs(lx-cx)>8){
+      addTo(mk('line',{x1:cx,y1:ry+TH,x2:lx,y2:ry+TH+9,
+        stroke:color,'stroke-width':'1.4','opacity':'.3','stroke-dasharray':'3,3'}));
+    }
+
+    /* badges ABOVE */
+    var BGAP=4;
+    var bws=p.badges.map(function(b){return Math.max(b.t.length*8.5+14,50);});
+    var totalBW=bws.reduce(function(s,w){return s+w;},0)+BGAP*(p.badges.length-1);
+    var bY=ry-GAP-BH;
+    var bx=lx-totalBW/2;
+    p.badges.forEach(function(b,bi){
+      var bw=bws[bi],bss=bStyle(b.s);
+      addTo(mk('rect',{x:bx,y:bY,width:bw,height:BH,rx:'10',fill:bss.bg,stroke:bss.br,'stroke-width':'1.1'}));
+      var bt=mk('text',{x:bx+bw/2,y:bY+BH-5.5,'text-anchor':'middle','font-family':'Georgia,serif','font-size':'11.5','font-weight':'bold','fill':bss.tx});
+      bt.textContent=b.t;addTo(bt);
+      bx+=bw+BGAP;
+    });
+
+    /* title BELOW */
+    var tlines=p.title.split('\n');
+    var tY=ry+TH+GAP+LH;
+    tlines.forEach(function(ln,li){
+      var approxW=ln.length*7.6+12;
+      addTo(mk('rect',{x:lx-approxW/2,y:tY+li*LH-14,width:approxW,height:16,rx:'2',fill:'rgba(255,255,255,.88)'}));
+      var tt=mk('text',{x:lx,y:tY+li*LH,'text-anchor':'middle','font-family':'Georgia,serif','font-size':'13.5','font-weight':'bold','fill':color});
+      tt.textContent=ln;addTo(tt);
+    });
+
+    /* hit zone — HTML overlay, fades in with the group */
+    var hit=document.createElement('div');
+    hit.className='stn-hit';
+    hit.style.left=cx+'px';hit.style.top=y+'px';
+    hit.style.width=(TW+20)+'px';hit.style.height=(TH+20)+'px';
+    hit.style.borderRadius='5px';
+    hit.style.opacity='0';
+    hit.style.animation='htmlFadeIn 0.45s ease forwards';
+    hit.style.animationDelay=delay;
+    wrap.appendChild(hit);
+    (function(pp,col){
+      hit.addEventListener('mouseenter',function(e){showMini(pp,col,e);});
+      hit.addEventListener('mousemove',function(e){moveCard(e);});
+      hit.addEventListener('mouseleave',function(){hideMini();});
+      hit.addEventListener('click',function(e){e.stopPropagation();hideMini();openM(pp,col);});
+    })(p,color);
+  });
+}
+
+function mk(tag,attrs){
+  var el=document.createElementNS('http://www.w3.org/2000/svg',tag);
+  Object.keys(attrs).forEach(function(k){el.setAttribute(k,attrs[k]);});
+  return el;
+}
+
+/* mini card */
+var hcard=document.getElementById('hcard'),hov=false;
+function showMini(p,col,e){
+  hov=true;
+  document.getElementById('hc-bar').style.background=col;
+  document.getElementById('hc-venue').textContent=p.venue;
+  document.getElementById('hc-tsm').textContent=p.title.replace('\n',' ');
+  var sm=document.getElementById('hc-img');
+  sm.src=p.img||'';sm.style.display=p.img?'':'none';
+  document.getElementById('hc-snip').textContent=p.abstract.slice(0,165)+'…';
+  document.getElementById('hc-auth').innerHTML=p.authors;
+  hcard.dataset.key=p.key;hcard.dataset.col=col;
+  hcard.classList.add('on');posCard(e);
+}
+function moveCard(e){if(hov)posCard(e);}
+function hideMini(){hov=false;setTimeout(function(){if(!hov)hcard.classList.remove('on');},80);}
+function posCard(e){
+  var cw=400,ch=hcard.offsetHeight||200,vw=window.innerWidth,vh=window.innerHeight;
+  var x=e.clientX+22,y=e.clientY-40;
+  if(x+cw>vw-10)x=e.clientX-cw-22;
+  if(y+ch>vh-10)y=vh-ch-10;if(y<8)y=8;
+  hcard.style.left=x+'px';hcard.style.top=y+'px';
+}
+hcard.addEventListener('click',function(){
+  var p=papers.filter(function(x){return x.key===hcard.dataset.key;})[0];
+  if(p){hideMini();openM(p,hcard.dataset.col);}
+});
+
+/* modal */
+function openM(p,col){
+  document.getElementById('m-cbar').style.background=col;
+  document.getElementById('m-venue').textContent=p.venue;
+  document.getElementById('m-title').textContent=p.fullTitle;
+  document.getElementById('m-authors').innerHTML=p.authors;
+  document.getElementById('m-abstract').textContent=p.abstract;
+  document.getElementById('m-contribs').innerHTML=p.contribs.map(function(c){return '<li>'+c+'</li>';}).join('');
+  document.getElementById('m-tags').innerHTML=p.tags.map(function(t){return '<span class="m-tag">'+t+'</span>';}).join('');
+  document.getElementById('m-badges').innerHTML=p.badges.map(function(b){
+    var bss=bStyle(b.s);
+    return '<span class="m-badge" style="background:'+bss.bg+';color:'+bss.tx+';border:1px solid '+bss.br+'">'+b.t+'</span>';
+  }).join('');
+  document.getElementById('m-links').innerHTML=p.projectUrl
+    ?'<a class="m-link" href="'+p.projectUrl+'" target="_blank">🔗 Project Page</a>':'';
+
+  var teaser=document.getElementById('m-teaser');
+  if(p.img){teaser.src=p.img;teaser.style.display='';}
+  else{teaser.src='';teaser.style.display='none';}
+
+  var rImg=document.getElementById('m-result');
+  var rVid=document.getElementById('m-result-video');
+  rImg.style.display='none';rVid.style.display='none';
+  if(p.resultImg){
+    if(p.isVideo){rVid.src=p.resultImg;rVid.style.display='';}
+    else{rImg.src=p.resultImg;rImg.style.display='';}
+  }
+
+  var cs=document.getElementById('m-cross-sec');
+  if(p.crosses&&p.crosses.length){
+    cs.style.display='';
+    document.getElementById('m-cross').innerHTML=p.crosses.map(function(c){
+      return '<div class="m-cross-chip"><div class="m-cross-dot" style="background:'+C[c]+'"></div>'+LN[c]+'</div>';
+    }).join('');
+  }else cs.style.display='none';
+
+  document.getElementById('moverlay').classList.add('open');
+}
+function closeM(){document.getElementById('moverlay').classList.remove('open');}
+function closeMifBg(e){if(e.target===document.getElementById('moverlay'))closeM();}
+
+document.getElementById('m-upload').addEventListener('change',function(){
+  var f=this.files[0];if(!f)return;
+  var r=new FileReader();
+  r.onload=function(e){var ti=document.getElementById('m-teaser');ti.src=e.target.result;ti.style.display='';};
+  r.readAsDataURL(f);
+});
+document.getElementById('m-upload2').addEventListener('change',function(){
+  var f=this.files[0];if(!f)return;
+  var isVid=f.type.startsWith('video/');
+  var r=new FileReader();
+  r.onload=function(ev){
+    var ri=document.getElementById('m-result'),rv=document.getElementById('m-result-video');
+    ri.style.display='none';rv.style.display='none';
+    if(isVid){rv.src=ev.target.result;rv.style.display='';}
+    else{ri.src=ev.target.result;ri.style.display='';}
+  };
+  r.readAsDataURL(f);
+});
+
+/* ── PAGE NAV + KEY HANDLER ── */
+var cur=1;
+var svgBuilt=false;
+function goPage(n){
+  if(n===cur)return;
+  document.getElementById('page'+cur).classList.remove('active');
+  document.getElementById('dot'+cur).classList.remove('on');
+  cur=n;
+  document.getElementById('page'+cur).classList.add('active');
+  document.getElementById('dot'+cur).classList.add('on');
+  /* hide global dots on page2 (it has its own nav in footer) */
+  document.getElementById('global-pdots').style.display=(n===2)?'none':'flex';
+  document.getElementById('phint-el').style.display=(n===2)?'none':'block';
+  if(n===2&&!svgBuilt){setTimeout(function(){buildSVG();svgBuilt=true;},40);}
+}
+
+document.addEventListener('keydown',function(e){
+  if(document.getElementById('moverlay').classList.contains('open')){
+    if(e.key==='Escape')closeM();return;
+  }
+  /* page 2: only left arrow goes back to page 1 */
+  if(cur===2){
+    if(e.key==='ArrowLeft'||e.key==='ArrowUp')goPage(1);
+    return;
+  }
+  /* page 1 */
+  if(e.key==='ArrowRight'||e.key==='ArrowDown'){
+    if(!tlShown){revealIndustry();return;}
+    goPage(2);return;
+  }
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp'){
+    if(tlShown){hideIndustry();return;}
   }
 });
 
-function openDetail(id) {
-  document.getElementById('d-'+id).classList.add('open');
-}
-function closeDetail(id) {
-  document.getElementById('d-'+id).classList.remove('open');
-}
+window.addEventListener('resize',function(){
+  if(cur===2){svgBuilt=false;buildSVG();svgBuilt=true;}
+});
+
+/* init */
+buildHTimeline();
 </script>
 </body>
 </html>
